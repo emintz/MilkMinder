@@ -7,7 +7,8 @@
 #include "RTClib.h"
 
 /**
- * Uses NTP to set a DS3231 to the current UTC time.
+ * Uses NTP to set a DS3231 to the current UTC time. Please be sure to
+ * set your wireless network name and password below.
  */
 
 String formatted_date;
