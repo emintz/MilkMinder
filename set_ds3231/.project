@@ -62,11 +62,6 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.5/libraries/SPI</locationURI>
 		</link>
 		<link>
-			<name>libraries/Time</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Time/1.6.1</locationURI>
-		</link>
-		<link>
 			<name>libraries/WiFi</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.5/libraries/WiFi</locationURI>

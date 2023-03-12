@@ -60,7 +60,7 @@ void setup() {
   }
 
   Serial.print("Connecting to WiFi");
-  WiFi.begin("MushroomPlanet", "Basidium-X100");
+  WiFi.begin("YOUR_NETWORK_ID", "YOUR_PASSWORD");
   wl_status_t wifi_connect_status;
   while ((wifi_connect_status = WiFi.status()) != WL_CONNECTED) {
     if (wifi_connect_status == WL_CONNECT_FAILED) {
