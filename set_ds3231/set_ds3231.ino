@@ -126,9 +126,9 @@ void setup() {
 
 // The loop function is called in an endless loop
 void loop() {
-	if (number_of_times++ < 20) {
-		Serial.println(time_keeper.now().timestamp());
-	}
-	Serial.println();
-	vTaskDelay(pdMS_TO_TICKS(1000));
+  if (number_of_times++ < 20) {
+    Serial.println(time_keeper.now().timestamp());
+  }
+  Serial.println();
+  vTaskDelay(pdMS_TO_TICKS(1000));
 }
