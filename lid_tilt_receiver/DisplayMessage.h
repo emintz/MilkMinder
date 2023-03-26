@@ -17,16 +17,18 @@
 #define MAX_LCD_TEXT_LENGTH 16
 
 enum DisplayCommand {
-  LCD_CLEAR,              // Clear the display
-  LCD_CONNECTED,          // Connected to the receiver
-  LCD_DELIVERED,          // Display delivered message
-  LCD_DISCONNECTED,       // Sender signal lost
-  LCD_ELAPSED,            // Elapsed time since delivery
-  LCD_INIT,               // Display initialization message
-  LCD_NOOP,               // Do nothing
-  LCD_RUN,                // Display run message
-  LCD_TIME_OF_DAY,        // Display time of day
-  LCD_TRANSMITTER_PANIC,  // Transmitter failure, e.g. gyroscope down
+  LCD_CLEAR,                // Clear the display
+  LCD_CONNECTED,            // Connected to the receiver
+  LCD_DELIVERED,            // Display delivered message
+  LCD_DISCONNECTED,         // Sender signal lost
+  LCD_ELAPSED,              // Elapsed time since delivery
+  LCD_INIT,                 // Display initialization message
+  LCD_NOOP,                 // Do nothing
+  LCD_RUN,                  // Display run message
+  LCD_TIME_OF_DAY,          // Display time of day
+  LCD_TRANSMITTER_PANIC,    // Transmitter failure, e.g. gyroscope down
+  LCD_TAMPER_ALERT,         // Milk box accessed 2 or more times.
+  LCD_DELIVERY_IN_PROGRESS, // Milk is being delivered
 };
 
 struct DisplayMessage {

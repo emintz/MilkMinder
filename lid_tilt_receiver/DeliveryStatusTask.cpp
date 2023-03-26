@@ -152,6 +152,8 @@ void DeliveryStatusTask::task_loop() {
           break;
         case DELIVERY_STATUS_IN_PROGRESS:
           lid_is_open();
+          display_message.command = LCD_DELIVERY_IN_PROGRESS;
+          xQueueSendToBack(h_display_command_queue, &display_message, 0);
           break;
         case DELIVERY_STATUS_COMPLETE:
           time_task->start_stopwatch();
@@ -162,6 +164,8 @@ void DeliveryStatusTask::task_loop() {
           break;
         case DELIVERY_STATUS_LID_OPEN_POST_ARRIVAL:
           lid_is_open();
+          display_message.command = LCD_TAMPER_ALERT;
+          xQueueSendToBack(h_display_command_queue, &display_message, 0);
           break;
         case DELIVERY_STATUS_SYSTEM_FAILURE:
           fail();

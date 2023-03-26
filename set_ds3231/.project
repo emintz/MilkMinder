@@ -41,35 +41,5 @@
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.5/variants/esp32s3</locationURI>
 		</link>
-		<link>
-			<name>libraries/Adafruit_BusIO</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Adafruit_BusIO/1.14.1</locationURI>
-		</link>
-		<link>
-			<name>libraries/NTPClient</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/NTPClient/3.2.1</locationURI>
-		</link>
-		<link>
-			<name>libraries/RTClib</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/RTClib/2.1.1</locationURI>
-		</link>
-		<link>
-			<name>libraries/SPI</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.5/libraries/SPI</locationURI>
-		</link>
-		<link>
-			<name>libraries/WiFi</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.5/libraries/WiFi</locationURI>
-		</link>
-		<link>
-			<name>libraries/Wire</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.5/libraries/Wire</locationURI>
-		</link>
 	</linkedResources>
 </projectDescription>

@@ -96,6 +96,14 @@ void LCDDisplayTask::task_loop() {
           display.setCursor(0, 0);
           display.print("XMIT FAIL       ");
           break;
+        case LCD_TAMPER_ALERT:
+          display.setCursor(0, 0);
+          display.print("Tamper Alert    ");
+          break;
+        case LCD_DELIVERY_IN_PROGRESS:
+          display.setCursor(0, 0);
+          display.print("Milk Arriving   ");
+          break;
       }
     }
   }
