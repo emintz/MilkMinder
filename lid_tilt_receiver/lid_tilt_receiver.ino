@@ -1,5 +1,8 @@
 /**
  * Milk minder receiver.
+ *
+ *      Author: Eric Mintz
+ *
  */
 #include "Arduino.h"
 
