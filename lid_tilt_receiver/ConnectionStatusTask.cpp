@@ -51,6 +51,7 @@ ConnectionStatusTask::ConnectionStatusTask(
     state(NET_INITIALIZED),
     Task("Network status", 2048, 15),
     h_communication_event_queue(NULL),
+    h_display_command_queue(NULL),
     disconnected_led_task(disconnected_led_task),
     connected_led_pin(connected_led_pin) {
 
