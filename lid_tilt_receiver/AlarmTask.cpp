@@ -21,8 +21,8 @@ const struct AlarmTask::AlarmSignal silent_alarm = {
 
 
 const struct AlarmTask::LevelAndDuration delivered_levels[] = {
-    { HIGH, 100 },
-    { LOW, 9900 },
+    { HIGH, 50 },
+    { LOW, 9950 },
 };
 const struct AlarmTask::AlarmSignal delivered_alarm = {
     2,
@@ -45,11 +45,15 @@ const struct AlarmTask::AlarmSignal disconnected_alarm = {
 };
 
 const struct AlarmTask::LevelAndDuration lid_open[] = {
-    { HIGH, 100 },
-    { LOW, 100 },
+    { HIGH, 50 },
+    { LOW, 50 },
+    { HIGH, 50 },
+    { LOW, 50 },
+    { HIGH, 50 },
+    { LOW, 1250 },
 };
 const struct AlarmTask::AlarmSignal lid_open_signal = {
-    2,
+    6,
     lid_open,
 };
 
