@@ -141,8 +141,6 @@ void setup() {
     h_gyroscope_event_queue,
     h_notification_send_queue);
 
-  esp_now_transmitter.begin(h_notification_send_queue);
-
   /**
    * Start tasks.
    */

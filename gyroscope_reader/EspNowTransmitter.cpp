@@ -145,14 +145,18 @@ bool EspNowTransmitter::begin(QueueHandle_t h_notification_send_queue) {
 
   Serial.print("Adding peer ... ");
   esp_now_peer_info peer_info;
+  memset(&peer_info, 0, sizeof(peer_info));
   memcpy(peer_info.peer_addr, peer_address, ESP_NOW_ETH_ALEN);
   memset(peer_info.lmk, 0, ESP_NOW_KEY_LEN);
   peer_info.ifidx = WIFI_IF_STA;
   peer_info.encrypt = false;
-  Serial.println(
-    (esp_now_add_peer(&peer_info) == ESP_OK)
-    ? "succeeded."
-    : "failed.");
+  esp_err_t peer_add_status = esp_now_add_peer(&peer_info);
+  if (peer_add_status == ESP_OK) {
+    Serial.println("succeeded.");
+  } else {
+    Serial.print("failed with status: 0X");
+    Serial.println(peer_add_status - ESP_ERR_ESPNOW_BASE);
+  }
   bool callback_registration_status =
     esp_now_register_send_cb(send_callback) == ESP_OK;
   Serial.print("Registering send callback ... ");
