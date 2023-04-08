@@ -28,7 +28,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Time}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Timezone/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Queue/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/FreeRTOS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/SPI/src}&quot;"/>
@@ -46,7 +45,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Time}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Timezone/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Queue/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/FreeRTOS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/SPI/src}&quot;"/>
@@ -64,7 +62,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Time}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Timezone/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Queue/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/FreeRTOS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lid_tilt_receiver/libraries/SPI/src}&quot;"/>

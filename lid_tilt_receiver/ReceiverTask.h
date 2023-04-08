@@ -27,7 +27,7 @@ class ReceiverTask :
   };
 
   QueueHandle_t h_communications_queue;  // Incoming communications events
-  QueueHandle_t h_delivery_event_queue;  // Transmits delivery events
+  QueueHandle_t h_lid_position_report_queue;  // Delivery events for MilkArrivalTask
 
   const TimeTask *time_task;
   WatchdogTimer * watchdog_timer;
@@ -49,7 +49,7 @@ public:
 
   TaskHandle_t start(
       QueueHandle_t h_communications_queue,
-      QueueHandle_t h_delivery_event_queue);
+      QueueHandle_t h_lid_position_report_queue);
 };
 
 #endif /* RECEIVERTASK_H_ */

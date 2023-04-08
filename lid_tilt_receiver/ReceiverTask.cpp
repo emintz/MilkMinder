@@ -11,9 +11,12 @@
 
 #include "esp_now.h"
 
+#include <stdlib.h>
+
 #include "CommunicationEvent.h"
-#include "DeliveryEvent.h"
+//#include "DeliveryEvent.h"
 #include "DisplayMessage.h"
+#include "LidPositionReport.h"
 #include "PinAssignments.h"
 
 static QueueHandle_t h_the_motion_notification_queue;
@@ -25,7 +28,8 @@ ReceiverTask::ReceiverTask(
     WatchdogTimer *watchdog_timer) :
       Task("Receiver", 2048, 4),
       h_communications_queue(NULL),
-      h_delivery_event_queue(NULL),
+//      h_delivery_event_queue(NULL),
+      h_lid_position_report_queue(NULL),
       watchdog_timer(watchdog_timer),
       time_task(time_task) {
 }
@@ -60,10 +64,14 @@ void ReceiverTask::task_loop() {
   MotionNotificationMessage motion_notification_message;
   memset(&motion_notification_message, 0, sizeof(motion_notification_message));
   CommunicationEvent event;
-  DeliveryEventMessage delivery_event_message;
+//  DeliveryEventMessage delivery_event_message;
+  LidPositionReport lid_position_report;
 
-  delivery_event_message.event = DELIVERY_EVENT_LISTENING;
-  xQueueSendToBack(h_delivery_event_queue, &delivery_event_message, 0);
+//  memset(&delivery_event_message, 0, sizeof(delivery_event_message));
+  memset(&lid_position_report, 0, sizeof(lid_position_report));
+
+//  delivery_event_message.event = DELIVERY_EVENT_LISTENING;
+//  xQueueSendToBack(h_delivery_event_queue, &delivery_event_message, 0);
   for(;;) {
     memset(&event, 0, sizeof(event));
     if (xQueueReceive(
@@ -78,12 +86,18 @@ void ReceiverTask::task_loop() {
 
       switch (motion_notification_message.status) {
         case LID_HAS_NOT_MOVED:
-          delivery_event_message.event = DELIVERY_EVENT_LID_CLOSED;
-          xQueueSendToBack(h_delivery_event_queue, &delivery_event_message, 0);
+//          delivery_event_message.event = DELIVERY_EVENT_LID_CLOSED;
+//          xQueueSendToBack(h_delivery_event_queue, &delivery_event_message, 0);
+          lid_position_report.lid_position = LidPositionReport::LID_POS_CLOSED;
+          xQueueSendToBack(
+              h_lid_position_report_queue, &lid_position_report, 0);
           break;
         case LID_RAISED:
-          delivery_event_message.event = DELIVERY_EVENT_LID_OPENED;
-          xQueueSendToBack(h_delivery_event_queue, &delivery_event_message, 0);
+//          delivery_event_message.event = DELIVERY_EVENT_LID_OPENED;
+//          xQueueSendToBack(h_delivery_event_queue, &delivery_event_message, 0);
+          lid_position_report.lid_position = LidPositionReport::LID_POS_OPEN;
+          xQueueSendToBack(
+              h_lid_position_report_queue, &lid_position_report, 0);
           break;
         case GYROSCOPE_SIGNAL_LOST:
           // TODO: support or remove. The transmitter does not send this
@@ -100,12 +114,14 @@ void ReceiverTask::task_loop() {
 
 TaskHandle_t ReceiverTask::start(
     QueueHandle_t h_communications_event_queue,
-    QueueHandle_t h_delivery_event_queue) {
+//    QueueHandle_t h_delivery_event_queue,
+    QueueHandle_t h_lid_position_report_queue) {
   h_the_motion_notification_queue =
       xQueueCreate(3, sizeof(MotionNotificationMessage));
 
   this->h_communications_queue = h_communications_event_queue;
-  this->h_delivery_event_queue = h_delivery_event_queue;
+//  this->h_delivery_event_queue = h_delivery_event_queue;
+  this->h_lid_position_report_queue = h_lid_position_report_queue;
 
   if (!esp_now_register_recv_cb(on_esp_now_received) == ESP_OK) {
     Serial.println("Receive callback registration failed.");

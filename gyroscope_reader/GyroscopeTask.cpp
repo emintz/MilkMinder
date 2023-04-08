@@ -9,10 +9,16 @@
 #include "PinAssignments.h"
 #include "TaskPriorities.h"
 
+#include <cmath>
+
 static TaskHandle_t h_motion_detection_task = 0;
 
 #define MPU6050_INTERRUPT_CONFIGURATION (unsigned char) 0b00011110
 #define MPU6050_INTERRUPT_CONFIG_REGISTER 0x37
+
+#define DEGREES_TO_RADIANS (PI / 180.0)
+#define RADIANS_TO_DEGREES (180.0 / PI)
+#define INCLINATION_THRESHOLD (PI / 6)
 
 void IRAM_ATTR motion_detected_interrupt_handler() {
   if (h_motion_detection_task) {
@@ -61,12 +67,25 @@ TaskHandle_t GyroscopeTask::start_update_loop() {
 
 void GyroscopeTask::task_loop() {
   Serial.println("Motion detection loop started.");
+  Serial.print("Inclination threshold: ");
+  Serial.print(INCLINATION_THRESHOLD);
+  Serial.print(" radians, ");
+  Serial.print(INCLINATION_THRESHOLD * RADIANS_TO_DEGREES);
+  Serial.println(" degrees.");
   for (;;) {
-    float z_acceleration = gyroscope.getAccZ();
+    float roll_in_degrees = gyroscope.getAngleX();
+    float pitch_in_degrees = gyroscope.getAngleY();
+    float tan_roll = tan(roll_in_degrees * DEGREES_TO_RADIANS);
+    float tan_pitch = tan(pitch_in_degrees * DEGREES_TO_RADIANS);
+    float inclination = atan(sqrt(tan_roll * tan_roll + tan_pitch * tan_pitch));
+
     notification_message.temperature_celsius =
       temperature_sensor.getTemperature();
     notification_message.status =
-        z_acceleration <= .9 ? LID_RAISED : LID_HAS_NOT_MOVED;
+        INCLINATION_THRESHOLD < inclination
+            ? LID_RAISED
+            : LID_HAS_NOT_MOVED;
+
     digitalWrite(
       BLUE_LED_PIN,
       notification_message.status == LID_RAISED ? HIGH : LOW);

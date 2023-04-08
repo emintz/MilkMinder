@@ -24,15 +24,6 @@
 class EventRelayTask :
     public Task {
 
-  enum GyroscopeState {
-    LID_IS_LEVEL,  // Top is level
-    NEW_TILT_RECEIVED,  // New tilt signal received
-    VERIFYING_TILT,  // Verifying motion, waiting for timeout
-    TILT_CONFIRMED,  //  Tilt confirmed.
-    TILT_SIGNAL_LOST,
-    LAST_SEND_STATE,  // MUST be last
-  };
-
   enum ReceiverConnectionState {
     UNKNOWN,
     CONNECTED,
@@ -56,7 +47,6 @@ private:
   static const State TRANSITION_TABLE
       [GYRO_NUMBER_OF_STATES][LAST_NOTIFICATION_STATUS];
 
-  GyroscopeState tilt_state;
   State state;
   ReceiverConnectionState connection_state;
   QueueHandle_t h_tilt_notification_queue;

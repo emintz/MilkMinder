@@ -89,7 +89,6 @@ EventRelayTask::EventRelayTask() :
         "Gyroscope event relay task",
         2048,
         ESP_NOW_SEND_PRIORITY),
-    tilt_state(LID_IS_LEVEL),
     state(GYRO_CREATED),
     connection_state(UNKNOWN),
     h_tilt_notification_queue(0),
@@ -114,8 +113,12 @@ void EventRelayTask::begin(
 void EventRelayTask::task_loop() {
   MotionNotificationMessage message;
   State maybe_next_state;
+  MotionStatus motion_status;
   uint32_t lid_moved_at_milliseconds = 0;
+  Serial.print("Initial state: ");
+  Serial.println(state);
   for (;;) {
+    motion_status = PING;
     if (xQueueReceive(
         h_tilt_notification_queue,
         &message,
@@ -129,13 +132,11 @@ void EventRelayTask::task_loop() {
           break;
         case GYRO_NEW_CLOSURE_RECEIVED:
           lid_moved_at_milliseconds = millis();
-          message.status = PING;
           break;
         case GYRO_VERIFYING_CLOSURE:
           if (CONFIRMATION_TIME_MS <=  millis() - lid_moved_at_milliseconds) {
             state = GYRO_CONFIRMED_CLOSURE;
-          } else {
-            message.status = PING;
+            motion_status = LID_HAS_NOT_MOVED;
           }
           break;
         case GYRO_CONFIRMED_CLOSURE:
@@ -146,8 +147,7 @@ void EventRelayTask::task_loop() {
         case GYRO_VERIFYING_OPEN:
           if (CONFIRMATION_TIME_MS <= millis() - lid_moved_at_milliseconds) {
             state = GYRO_CONFIRMED_OPEN;
-          } else {
-            message.status = PING;
+            motion_status = LID_RAISED;
           }
           break;
         case GYRO_CONFIRMED_OPEN:
@@ -158,6 +158,7 @@ void EventRelayTask::task_loop() {
           break;
         }
       }
+      message.status = motion_status;
       xQueueSendToBack(
         h_send_to_receiver_queue,
         &message,

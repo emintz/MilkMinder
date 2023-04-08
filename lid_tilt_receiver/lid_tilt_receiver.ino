@@ -32,16 +32,18 @@
 #include "ConnectionStatusTask.h"
 #include "DeliveryLEDIlluminationStatus.h"
 #include "DeliveryLedTask.h"
-#include "DeliveryStatusTask.h"
 #include "DisconnectedLedTask.h"
 #include "DisplayMessage.h"
+#include "LidPositionReport.h"
 #include "LCDDisplayTask.h"
+#include "MilkArrivalTask.h"
 #include "PinAssignments.h"
 #include "ReceiverTask.h"
 #include "RippleTask.h"
 #include "TimeTask.h"
 #include "Timezone.h"
 #include "WatchdogTimer.h"
+#include "WhiteLedPin.h"
 
 #define I2C_LCD_ADDRESS 0x27
 #define LCD_ROWS 2
@@ -49,14 +51,16 @@
 
 QueueHandle_t h_alarm_event_queue;
 QueueHandle_t h_communications_event_queue;
-QueueHandle_t h_delivery_event_queue;
 QueueHandle_t h_delivery_led_illumination_queue;
 QueueHandle_t h_display_command_queue;
+QueueHandle_t h_lid_position_report_queue;
 
 TaskHandle_t h_connection_status_task;
-TaskHandle_t h_delivery_led_illumination_task;
 TaskHandle_t h_disconnected_led_task;
+TaskHandle_t h_lid_position_report_task;
 TaskHandle_t h_lcd_display_task;
+TaskHandle_t h_delivery_led_illumination_task;
+TaskHandle_t h_milk_arrival_task;
 TaskHandle_t h_time_task;
 
 // TODO: store the timezone in eeprom.
@@ -69,7 +73,7 @@ AlarmTask alarm_task(ALARM_PIN, YELLOW_LED_PIN);
 RTC_DS3231 time_keeper;
 TimeTask time_task(&time_keeper, &usEastern);
 
-DeliveryStatusTask delivery_status_task(&time_task);
+MilkArrivalTask milk_arrival_task(&time_task);
 
 LiquidCrystal_I2C display(I2C_LCD_ADDRESS, LCD_COLUMNS, LCD_ROWS);
 LCDDisplayTask display_task(display, &time_task);
@@ -112,16 +116,17 @@ void setup() {
   pinMode(YELLOW_LED_PIN, OUTPUT);
   pinMode(GREEN_LED_PIN, OUTPUT);
   pinMode(BLUE_LED_PIN, OUTPUT);
+  pinMode(WHITE_LED_PIN, OUTPUT);
   pinMode(ALARM_PIN, OUTPUT);
 
   digitalWrite(BUILTIN_LED_PIN, LOW);
 
   h_alarm_event_queue = xQueueCreate(3, sizeof(AlarmTask::AlarmTaskMessage));
   h_communications_event_queue = xQueueCreate(3, sizeof(CommunicationEvent));
-  h_delivery_event_queue = xQueueCreate(3, sizeof(DeliveryEvent));
   h_delivery_led_illumination_queue =
       xQueueCreate(3, sizeof(LedIlluminationMessage));
   h_display_command_queue = xQueueCreate(3, sizeof(DisplayMessage));
+  h_lid_position_report_queue = xQueueCreate(3, sizeof(LidPositionReport));
 
   h_lcd_display_task = display_task.start(h_display_command_queue);
   DisplayMessage display_message;
@@ -129,6 +134,7 @@ void setup() {
   display_message.command = LCD_INIT;
   xQueueSendToBack(h_display_command_queue, &display_message, 0);
 
+  digitalWrite(WHITE_LED_PIN, HIGH);
   ripple_task.start();
   ripple_task.resume();
   Serial.begin(115200);
@@ -157,6 +163,7 @@ void setup() {
 
   vTaskDelay(pdMS_TO_TICKS(10000));
   ripple_task.suspend();
+  digitalWrite(WHITE_LED_PIN, LOW);
 
   watchdog_timer.start(h_communications_event_queue);
   Serial.println("Watchdog timer started.");
@@ -192,15 +199,15 @@ void setup() {
   vTaskDelay(pdMS_TO_TICKS(2000));
   connection_dropped_signal.suspend();
 
-  delivery_status_task.start(
-      h_delivery_event_queue,
+  h_milk_arrival_task = milk_arrival_task.start(
+      h_lid_position_report_queue,
       h_delivery_led_illumination_queue,
       h_alarm_event_queue,
       h_display_command_queue);
 
   receiver_task.start(
       h_communications_event_queue,
-      h_delivery_event_queue);
+      h_lid_position_report_queue);
   Serial.println("Receiver task started.");
 }
 

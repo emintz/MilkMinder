@@ -27,7 +27,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinder}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Time}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/FreeRTOS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/SPI/src}&quot;"/>
@@ -44,7 +43,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinder}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Time}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/FreeRTOS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/SPI/src}&quot;"/>
@@ -61,7 +59,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinder}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Time}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/FreeRTOS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/SPI/src}&quot;"/>
