@@ -116,7 +116,7 @@ void GyroscopeTask::UpdateTask::task_loop() {
   Serial.println("GyroscopeTask::UpdateTask::task_loop() started");
   for (;;) {
     gyroscope->update();
-    vTaskDelay(pdMS_TO_TICKS(2));
+    taskYIELD();
   }
 }
 
