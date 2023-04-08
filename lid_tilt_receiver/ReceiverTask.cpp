@@ -109,7 +109,6 @@ TaskHandle_t ReceiverTask::start(
       xQueueCreate(3, sizeof(MotionNotificationMessage));
 
   this->h_communications_queue = h_communications_event_queue;
-//  this->h_delivery_event_queue = h_delivery_event_queue;
   this->h_lid_position_report_queue = h_lid_position_report_queue;
 
   if (!esp_now_register_recv_cb(on_esp_now_received) == ESP_OK) {
