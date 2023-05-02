@@ -11,24 +11,12 @@
 
 #include <cmath>
 
-static TaskHandle_t h_motion_detection_task = 0;
-
 #define MPU6050_INTERRUPT_CONFIGURATION (unsigned char) 0b00011110
 #define MPU6050_INTERRUPT_CONFIG_REGISTER 0x37
 
 #define DEGREES_TO_RADIANS (PI / 180.0)
 #define RADIANS_TO_DEGREES (180.0 / PI)
 #define INCLINATION_THRESHOLD (PI / 6)
-
-void IRAM_ATTR motion_detected_interrupt_handler() {
-  if (h_motion_detection_task) {
-    BaseType_t higher_priority_task_taken = pdFALSE;
-    vTaskNotifyGiveFromISR(
-      h_motion_detection_task,
-      &higher_priority_task_taken);
-    portYIELD_FROM_ISR(higher_priority_task_taken);
-  }
-}
 
 GyroscopeTask::GyroscopeTask() :
     Task(
