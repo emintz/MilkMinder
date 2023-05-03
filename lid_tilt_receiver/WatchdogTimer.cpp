@@ -74,7 +74,6 @@ void WatchdogTimer::transition(Event event) {
       xTimerStart(h_timer, 0);
       break;
     case RESETTING:
-      Serial.println("WIFI timer reset");
       xTimerReset(h_timer, 0);
       xQueueSendToBack(
           h_connection_status_queue,
@@ -85,7 +84,6 @@ void WatchdogTimer::transition(Event event) {
       xTimerReset(h_timer, 0);
       break;
     case EXPIRING:
-      Serial.println("WIFI timeout.");
       xQueueSendToBack(
           h_connection_status_queue,
           &CONNECTION_DOWN,
@@ -102,8 +100,6 @@ void WatchdogTimer::reset() {
 }
 
 void WatchdogTimer::start(QueueHandle_t h_communications_event_queue) {
-  Serial.print("WatchdogTimer::start connection event handle: ");
-  Serial.println((uint32_t) h_communications_event_queue, HEX);
 
   h_connection_status_queue = h_communications_event_queue;
 
