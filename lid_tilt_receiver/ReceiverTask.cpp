@@ -24,7 +24,7 @@ static uint8_t builtin_pin_state = LOW;
 
 ReceiverTask::ReceiverTask(
     TimeTask *time_task,
-    WatchdogTimer *watchdog_timer) :
+    Resettable *watchdog_timer) :
       Task("Receiver", 2048, 4),
       h_communications_queue(NULL),
       h_lid_position_report_queue(NULL),
@@ -113,10 +113,11 @@ TaskHandle_t ReceiverTask::start(
 
   if (!esp_now_register_recv_cb(on_esp_now_received) == ESP_OK) {
     Serial.println("Receive callback registration failed.");
-  } else {
-    Serial.println("ESP_NOW handler started.");
     // TODO: panic
-  }
+ } else {
+    Serial.println("ESP_NOW handler started.");
+
+ }
 
   return create_and_start_task();
 }

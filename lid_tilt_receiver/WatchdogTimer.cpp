@@ -68,7 +68,11 @@ void WatchdogTimer::transition(Event event) {
   state = TRANSITION_TABLE[state][event];
   switch (state) {
     case CREATED:
-      // Nothing to do
+      // Assume connection down until shown otherwise.
+      xQueueSendToBack(
+          h_connection_status_queue,
+          &CONNECTION_DOWN,
+          pdMS_TO_TICKS(10));
       break;
     case STARTING:
       xTimerStart(h_timer, 0);

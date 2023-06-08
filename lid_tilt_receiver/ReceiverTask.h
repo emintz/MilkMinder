@@ -14,6 +14,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
+#include "Resettable.h"
 #include "Task.h"
 #include "TimeTask.h"
 #include "WatchdogTimer.h"
@@ -30,7 +31,7 @@ class ReceiverTask :
   QueueHandle_t h_lid_position_report_queue;  // Delivery events for MilkArrivalTask
 
   const TimeTask *time_task;
-  WatchdogTimer * watchdog_timer;
+  Resettable * watchdog_timer;
 
   static void on_esp_now_received(
       const uint8_t *mac,
@@ -42,7 +43,7 @@ class ReceiverTask :
 public:
   ReceiverTask(
       TimeTask *time_task,
-      WatchdogTimer *watchdog_timer);
+      Resettable *watchdog_timer);
   virtual ~ReceiverTask();
 
   static bool begin();

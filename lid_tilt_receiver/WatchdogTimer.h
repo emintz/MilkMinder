@@ -10,6 +10,7 @@
  */
 
 #include "Arduino.h"
+#include "Resettable.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
@@ -27,7 +28,7 @@
  * A watchdog timer that resumes a task when it fires and suspends a task
  * when it is not firing.
  */
-class WatchdogTimer {
+class WatchdogTimer : public Resettable {
 public:
   enum State {
     CREATED,
@@ -88,7 +89,7 @@ public:
   /**
    * Restart the countdown.
    */
-  void reset();
+  virtual void reset();
 };
 
 #endif /* WATCHDOGTIMER_H_ */

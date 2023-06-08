@@ -34,6 +34,7 @@
 #include "DeliveryLedTask.h"
 #include "DisconnectedLedTask.h"
 #include "DisplayMessage.h"
+#include "GyroConnectionWatchdogTask.h"
 #include "LidPositionReport.h"
 #include "LCDDisplayTask.h"
 #include "MilkArrivalTask.h"
@@ -42,7 +43,6 @@
 #include "RippleTask.h"
 #include "TimeTask.h"
 #include "Timezone.h"
-#include "WatchdogTimer.h"
 #include "WhiteLedPin.h"
 
 #define I2C_LCD_ADDRESS 0x27
@@ -91,12 +91,9 @@ BlinkTask connection_dropped_signal(
   150,
   500);
 
-WatchdogTimer watchdog_timer(
-  "ESP-Now connection watchdog",
-  1510,
-  &connection_dropped_signal);
+GyroConnectionWatchdogTask gyro_connection_watchdog(&connection_dropped_signal);
 
-ReceiverTask receiver_task(&time_task, &watchdog_timer);
+ReceiverTask receiver_task(&time_task, &gyro_connection_watchdog);  // was watchdog_timer
 
 DeliveryLedTask delivery_led_task(BLUE_LED_PIN, 100, 100);
 
@@ -165,7 +162,23 @@ void setup() {
   ripple_task.suspend();
   digitalWrite(WHITE_LED_PIN, LOW);
 
-  watchdog_timer.start(h_communications_event_queue);
+  h_delivery_led_illumination_task =
+      delivery_led_task.start(h_delivery_led_illumination_queue);
+
+  h_disconnected_led_task = disconnected_led_task.start(h_alarm_event_queue);
+
+  h_connection_status_task = connection_status_task.start(
+      h_communications_event_queue,
+      h_display_command_queue);
+
+  alarm_task.start(h_alarm_event_queue);
+
+  TaskHandle_t h_blink_task =
+    connection_dropped_signal.start_blink_loop("Connection dropped blink");
+  Serial.println("Blink task started.");
+
+  // watchdog_timer.start(h_communications_event_queue);
+  gyro_connection_watchdog.start(h_communications_event_queue);
   Serial.println("Watchdog timer started.");
   h_time_task = time_task.start(h_display_command_queue, GPIO_NUM_17);
 
@@ -176,21 +189,7 @@ void setup() {
   settimeofday(&tv, NULL);
   Serial.println("Time set.");
 
-  h_delivery_led_illumination_task =
-      delivery_led_task.start(h_delivery_led_illumination_queue);
-
-  h_disconnected_led_task = disconnected_led_task.start(h_alarm_event_queue);
-
-  h_connection_status_task = connection_status_task.start(
-      h_communications_event_queue,
-      h_display_command_queue);
-
   ReceiverTask::begin();
-  alarm_task.start(h_alarm_event_queue);
-
-  TaskHandle_t h_blink_task =
-    connection_dropped_signal.start_blink_loop("Connection dropped blink");
-  Serial.println("Blink task started.");
 
   memset(&display_message, 0, sizeof(display_message));
   display_message.command = LCD_RUN;
@@ -212,5 +211,5 @@ void setup() {
 }
 
 void loop() {
-  vTaskDelete(NULL);
+  vTaskDelay(pdMS_TO_TICKS(10000));
 }

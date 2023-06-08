@@ -93,10 +93,7 @@ void AlarmTask::emit_alarm(const AlarmSignal &alarm_signal) {
       const LevelAndDuration *level_and_duration = alarm_signal.level + i;
       digitalWrite(audio_alert_pin_no, level_and_duration->level);
       digitalWrite(led_pin_no, level_and_duration->level);
-      xQueuePeek(
-          h_alarm_event_queue,
-          &message,
-          pdMS_TO_TICKS(level_and_duration->duration_ms));
+      vTaskDelay(level_and_duration->duration_ms);
     }
   }
 }

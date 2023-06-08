@@ -83,6 +83,7 @@ void ConnectionStatusTask::task_loop() {
         switch (state =
             TRANSITION_TABLE[state][connection_status_message.status]) {
         case NET_INITIALIZED:
+          Serial.println("WIFI initializing.");
           break;
         case NET_GOING_DOWN:
           digitalWrite(connected_led_pin, LOW);

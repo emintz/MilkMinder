@@ -116,6 +116,9 @@ TaskHandle_t TimeTask::start(
         interrupt_pin,
         second_tick_handler,
         &isr_params);
+    Serial.println("Time task started.");
+  } else {
+    Serial.println("Time keeper failed to start.");
   }
   return isr_params.h_time_task;
 }
