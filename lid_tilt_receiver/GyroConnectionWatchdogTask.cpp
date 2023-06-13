@@ -72,7 +72,8 @@ GyroConnectionWatchdogTask::~GyroConnectionWatchdogTask(void) {
 }
 
 void GyroConnectionWatchdogTask::on_timer_expired(TimerHandle_t h_timer) {
-  (static_cast<GyroConnectionWatchdogTask *>(h_timer))->expire();
+  (static_cast<GyroConnectionWatchdogTask *>(pvTimerGetTimerID(h_timer)))
+      ->expire();
 }
 
 void GyroConnectionWatchdogTask::expire(void) {
