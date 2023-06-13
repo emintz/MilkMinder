@@ -83,7 +83,6 @@ AlarmTask::~AlarmTask() {
 }
 
 void AlarmTask::emit_alarm(const AlarmSignal &alarm_signal) {
-  AlarmTaskMessage message;
   while (!uxQueueMessagesWaiting(h_alarm_event_queue)) {
     for (
         size_t i = 0;
@@ -102,7 +101,7 @@ void AlarmTask::task_loop() {
   AlarmTaskMessage message;
   for (;;) {
     memset(&message, 0, sizeof(message));
-    if (xQueueReceive(h_alarm_event_queue, &message, 0) ) {
+    if (xQueueReceive(h_alarm_event_queue, &message, portMAX_DELAY) ) {
       switch (message.event) {
       case ALARM_EVENT_CONNECTED:
         emit_alarm(silent_alarm);
