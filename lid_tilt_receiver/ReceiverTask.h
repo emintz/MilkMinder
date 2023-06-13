@@ -17,7 +17,6 @@
 #include "Resettable.h"
 #include "Task.h"
 #include "TimeTask.h"
-#include "WatchdogTimer.h"
 
 class ReceiverTask :
     public Task {
