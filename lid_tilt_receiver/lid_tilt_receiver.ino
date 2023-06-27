@@ -130,6 +130,8 @@ void setup() {
   memset(&display_message, 0, sizeof(display_message));
   display_message.command = LCD_INIT;
   xQueueSendToBack(h_display_command_queue, &display_message, 0);
+  memset(&display_message, 0, sizeof(display_message));
+  display_message.command = LCD_DISCONNECTEDxQueueSendToBack(h_display_command_queue, &display_message, 0);
 
   digitalWrite(WHITE_LED_PIN, HIGH);
   ripple_task.start();
@@ -156,6 +158,13 @@ void setup() {
      Serial.println("ESP_NOW initialization failed.");
   } else {
     Serial.println("ESP_NOW initialized and ready to start.");
+  }
+
+  for (int beep_count = 0; beep_count < 5; ++beep_count) {
+    digitalWrite(ALARM_PIN, HIGH);
+    vTaskDelay(pdMS_TO_TICKS(10));
+    digitalWrite(ALARM_PIN, LOW);
+    vTaskDelay(pdMS_TO_TICKS(20));
   }
 
   vTaskDelay(pdMS_TO_TICKS(10000));
@@ -192,7 +201,7 @@ void setup() {
   ReceiverTask::begin();
 
   memset(&display_message, 0, sizeof(display_message));
-  display_message.command = LCD_RUN;
+  display_message.command = LCD_DISCONNECTED;
   xQueueSendToBack(h_display_command_queue, &display_message, 0);
   connection_dropped_signal.resume();
   vTaskDelay(pdMS_TO_TICKS(2000));
@@ -208,6 +217,9 @@ void setup() {
       h_communications_event_queue,
       h_lid_position_report_queue);
   Serial.println("Receiver task started.");
+  memset(&display_message, 0, sizeof(display_message));
+  display_message.command = LCD_RUN;
+  xQueueSendToBack(h_display_command_queue, &display_message, 0);
 }
 
 void loop() {
