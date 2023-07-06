@@ -14,7 +14,6 @@
 #define GYROCONNECTIONWATCHDOGTASK_H_
 
 #include "Arduino.h"
-#include "BlinkTask.h"
 #include "Resettable.h"
 #include "Task.h"
 
@@ -46,8 +45,6 @@ private:
     Event event;
   } EventMessage_t;
 
-  BlinkTask *blink_task;
-
   State state;
   TimerHandle_t h_timer;
   QueueHandle_t h_connection_status_queue;
@@ -59,8 +56,7 @@ private:
   static void on_timer_expired(TimerHandle_t h_timer);
 
 public:
-  GyroConnectionWatchdogTask(
-      BlinkTask *blink_task);
+  GyroConnectionWatchdogTask();
   virtual ~GyroConnectionWatchdogTask();
 
   void expire(void);

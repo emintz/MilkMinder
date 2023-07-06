@@ -55,13 +55,11 @@ static const GyroConnectionWatchdogTask::State TRANSITION_TABLE
   };
 
 
-GyroConnectionWatchdogTask::GyroConnectionWatchdogTask(
-    BlinkTask *blink_task) :
+GyroConnectionWatchdogTask::GyroConnectionWatchdogTask() :
         Task(
             "ESP32 Watchdog",
             STACK_DEPTH,
             PRIORITY),
-      blink_task(blink_task),
       state(CREATED),
       h_timer(NULL),
       h_connection_status_queue(NULL),

@@ -27,7 +27,6 @@
 #include <sys/time.h>
 
 #include "AlarmTask.h"
-#include "BlinkTask.h"
 #include "CommunicationEvent.h"
 #include "ConnectionStatusTask.h"
 #include "DeliveryLEDIlluminationStatus.h"
@@ -84,16 +83,9 @@ const uint8_t led_pins[] =
 
 RippleTask ripple_task(led_pins, NUMBER_OF_LED_PINS, 100);
 
-BlinkTask connection_dropped_signal(
-  "Receiver connection lost",
-  RED_LED_PIN,
-  3,
-  150,
-  500);
+GyroConnectionWatchdogTask gyro_connection_watchdog;
 
-GyroConnectionWatchdogTask gyro_connection_watchdog(&connection_dropped_signal);
-
-ReceiverTask receiver_task(&time_task, &gyro_connection_watchdog);  // was watchdog_timer
+ReceiverTask receiver_task(&time_task, &gyro_connection_watchdog);
 
 DeliveryLedTask delivery_led_task(BLUE_LED_PIN, 100, 100);
 
@@ -131,7 +123,9 @@ void setup() {
   display_message.command = LCD_INIT;
   xQueueSendToBack(h_display_command_queue, &display_message, 0);
   memset(&display_message, 0, sizeof(display_message));
-  display_message.command = LCD_DISCONNECTEDxQueueSendToBack(h_display_command_queue, &display_message, 0);
+
+  display_message.command = LCD_DISCONNECTED;
+  xQueueSendToBack(h_display_command_queue, &display_message, 0);
 
   digitalWrite(WHITE_LED_PIN, HIGH);
   ripple_task.start();
@@ -182,10 +176,6 @@ void setup() {
 
   alarm_task.start(h_alarm_event_queue);
 
-  TaskHandle_t h_blink_task =
-    connection_dropped_signal.start_blink_loop("Connection dropped blink");
-  Serial.println("Blink task started.");
-
   // watchdog_timer.start(h_communications_event_queue);
   gyro_connection_watchdog.start(h_communications_event_queue);
   Serial.println("Watchdog timer started.");
@@ -199,13 +189,6 @@ void setup() {
   Serial.println("Time set.");
 
   ReceiverTask::begin();
-
-  memset(&display_message, 0, sizeof(display_message));
-  display_message.command = LCD_DISCONNECTED;
-  xQueueSendToBack(h_display_command_queue, &display_message, 0);
-  connection_dropped_signal.resume();
-  vTaskDelay(pdMS_TO_TICKS(2000));
-  connection_dropped_signal.suspend();
 
   h_milk_arrival_task = milk_arrival_task.start(
       h_lid_position_report_queue,

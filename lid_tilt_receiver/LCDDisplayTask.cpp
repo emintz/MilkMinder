@@ -86,7 +86,6 @@ void LCDDisplayTask::task_loop() {
         case LCD_RUN:
           display.setCursor(0, 0);
           display.print("Listening       ");
-          connected();
           break;
         case LCD_TIME_OF_DAY:
           display.setCursor(MAX_LCD_TEXT_LENGTH-strlen(command_message.text), 1);
