@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "WiFi.h"
-#include "esp_now.h"
 
 /**
  * Retrieve the machine's MAC address.
@@ -15,4 +14,5 @@ void setup() {
 
 // The loop function is called in an endless loop
 void loop() {
+  vTaskDelay(portMAX_DELAY);
 }
