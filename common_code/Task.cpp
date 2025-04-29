@@ -14,7 +14,8 @@ Task::Task(
       task_name(task_name),
       stack_depth(stack_depth),
       priority(priority),
-      creation_status(0) {
+      creation_status(0),
+      h_task(NULL) {
 
 }
 
@@ -36,8 +37,22 @@ TaskHandle_t Task::create_and_start_task() {
     task_handle = NULL;
   }
 
+  h_task = task_handle;
+
   return task_handle;
 }
+void Task::notify(void) {
+  xTaskNotifyGive(h_task);
+}
+
+void Task::notify_from_ISR(void) {
+  BaseType_t higher_priority_task_woken;
+  vTaskNotifyGiveFromISR(h_task, &higher_priority_task_woken);
+  if (higher_priority_task_woken) {
+    portYIELD_FROM_ISR();
+  }
+}
+
 
 void Task::run_the_task_loop(void *params) {
   ((Task *) params)->task_loop();

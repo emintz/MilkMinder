@@ -29,6 +29,7 @@ class Task {
   const uint32_t stack_depth;
   UBaseType_t priority;
   BaseType_t creation_status;
+  TaskHandle_t h_task;
 
   /**
    * The task function, the function that runs when the task starts.
@@ -64,6 +65,25 @@ public:
   BaseType_t get_creation_status() {
     return creation_status;
   }
+
+  /***
+   * Notify this Task from application code. If this Task is suspended,
+   * it will resume running.
+   *
+   * Warning: do NOT invoke this method from an interrupt service routing
+   * (ISR). Invoke notify_from_ISR() instead.
+   */
+  void notify(void);
+
+  /***
+   * Notify this Task from an interrupt service routine (ISR) code. If this
+   * Task is suspended, it will resume running.
+   *
+   * Warning: do NOT invoke this method from application code. Invoke
+   * notify() instead.
+   */
+  void notify_from_ISR(void);
+
 
   /**
    * User-provided task loop, the method that does the work.

@@ -48,6 +48,7 @@ public:
 		const uint16_t number_of_flashes,
 		const uint16_t inter_flash_wait_ms,
 		const uint16_t inter_group_wait_ms);
+
 	virtual ~BlinkTask();
 
 	/**
