@@ -1,4 +1,11 @@
 /Release/
 /sloeber.ino.cpp
 /install.sh
+/src/library.properties
+/.cproject
+/.project
+/.settings/
+/.sproject
+/common_code.ino
+/spec.d
 
