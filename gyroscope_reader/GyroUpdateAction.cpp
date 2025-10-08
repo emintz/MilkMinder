@@ -15,7 +15,6 @@ GyroUpdateAction::GyroUpdateAction(MPU6050& gyroscope) :
 GyroUpdateAction::~GyroUpdateAction() {
 }
 
-
 void GyroUpdateAction::run(void) {
   for(;;) {
     gyroscope_.update();

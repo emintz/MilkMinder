@@ -16,11 +16,11 @@
 #define MPU6050_INTERRUPT_CONFIG_REGISTER 0x37
 
 MotionDetectAction::MotionDetectAction(
-		PullQueueHT<MotionNotificationMessage>& gyroscope_event_queue,
-		MPU6050 &gyroscope) :
-	gyroscope_event_queue_(gyroscope_event_queue),
-	gyroscope_(gyroscope),
-	temperature_sensor_(TEMPERATURE_AND_HUMIDITY_PIN) {
+    PullQueueHT<MotionNotificationMessage>& gyroscope_event_queue,
+    MPU6050 &gyroscope) :
+        gyroscope_event_queue_(gyroscope_event_queue),
+        gyroscope_(gyroscope),
+        temperature_sensor_(TEMPERATURE_AND_HUMIDITY_PIN) {
 }
 
 MotionDetectAction::~MotionDetectAction() {

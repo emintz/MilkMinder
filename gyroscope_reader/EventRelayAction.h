@@ -45,7 +45,7 @@ private:
 
   static const State TRANSITION_TABLE
       [static_cast<size_t>(State::GYRO_NUMBER_OF_STATES)]
-	  [LAST_NOTIFICATION_STATUS];
+      [LAST_NOTIFICATION_STATUS];
 
   PullQueueHT<MotionNotificationMessage>& tilt_notification_queue_;
   PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue_;
@@ -55,8 +55,8 @@ private:
 
 public:
   EventRelayAction(
-		  PullQueueHT<MotionNotificationMessage>& tilt_notification_queue,
-		  PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue);
+      PullQueueHT<MotionNotificationMessage>& tilt_notification_queue,
+      PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue);
   virtual ~EventRelayAction();
 
   /**

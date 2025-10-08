@@ -37,46 +37,46 @@ static TaskHandle_t h_connection_dropped_blink_task;
 static MPU6050 gyroscope(Wire);
 
 static BlinkTask connection_dropped_signal(
-  "Receiver connection lost",
-  RED_LED_PIN,
-  3,
-  150,
-  500);
+    "Receiver connection lost",
+    RED_LED_PIN,
+    3,
+    150,
+    500);
 
 static EspNowTransmitAction esp_now_transmit_action(
-  receiver_address,
-  notification_send_queue,
-  &connection_dropped_signal);
+    receiver_address,
+    notification_send_queue,
+    &connection_dropped_signal);
 static TaskWithActionH esp_now_transmit_task(
-		"ESP-Now transmit",
-		ESP_NOW_SEND_PRIORITY,
-		&esp_now_transmit_action,
-		4096);
+    "ESP-Now transmit",
+    ESP_NOW_SEND_PRIORITY,
+    &esp_now_transmit_action,
+    4096);
 
 static GyroUpdateAction gyro_update_action(gyroscope);
 static TaskWithActionH gyro_refresh_task(
-		"Refresh Gyro",
-		GYROSCOPE_UPDATE_PIORITY,
-		&gyro_update_action,
-		4096);
+    "Refresh Gyro",
+    GYROSCOPE_UPDATE_PIORITY,
+    &gyro_update_action,
+    4096);
 
 static MotionDetectAction motion_detect_action(
-		gyroscope_event_queue,
-		gyroscope);
+    gyroscope_event_queue,
+    gyroscope);
 static TaskWithActionH motion_detect_task(
-		"Detect Motion",
-		MOTION_DETECTION_PRIORITY,
-		&motion_detect_action,
-		4096);
+    "Detect Motion",
+    MOTION_DETECTION_PRIORITY,
+    &motion_detect_action,
+    4096);
 
 static EventRelayAction event_relay_action(
-		gyroscope_event_queue,
-		notification_send_queue);
+    gyroscope_event_queue,
+    notification_send_queue);
 static TaskWithActionH event_relay_task(
-		"Event Relay",
-		RELAY_PRIORITY,
-		&event_relay_action,
-		4096);
+    "Event Relay",
+    RELAY_PRIORITY,
+    &event_relay_action,
+    4096);
 
 static void start_blink_tasks() {
   Serial.print("Starting blink task ... ");
@@ -97,39 +97,39 @@ static void start_blink_tasks() {
  * lamp test.
  */
 static void init_leds(void) {
-	  pinMode(SYSTEM_IS_LIVE_LED_PIN, OUTPUT);
-	  digitalWrite(SYSTEM_IS_LIVE_LED_PIN, LOW);
+    pinMode(SYSTEM_IS_LIVE_LED_PIN, OUTPUT);
+    digitalWrite(SYSTEM_IS_LIVE_LED_PIN, LOW);
 
-	  pinMode(RED_LED_PIN, OUTPUT);
-	  pinMode(YELLOW_LED_PIN, OUTPUT);
-	  pinMode(GREEN_LED_PIN, OUTPUT);
-	  pinMode(BLUE_LED_PIN, OUTPUT);
+    pinMode(RED_LED_PIN, OUTPUT);
+    pinMode(YELLOW_LED_PIN, OUTPUT);
+    pinMode(GREEN_LED_PIN, OUTPUT);
+    pinMode(BLUE_LED_PIN, OUTPUT);
 
-	  digitalWrite(RED_LED_PIN, LOW);
-	  digitalWrite(YELLOW_LED_PIN, LOW);
-	  digitalWrite(GREEN_LED_PIN, LOW);
-	  digitalWrite(BLUE_LED_PIN, LOW);
+    digitalWrite(RED_LED_PIN, LOW);
+    digitalWrite(YELLOW_LED_PIN, LOW);
+    digitalWrite(GREEN_LED_PIN, LOW);
+    digitalWrite(BLUE_LED_PIN, LOW);
 
-		// Lamp test
+      // Lamp test
 
-	  vTaskDelay(pdMS_TO_TICKS(1000));
-	  Serial.println("Illuminating LEDs.");
-	  digitalWrite(RED_LED_PIN, HIGH);
-	  vTaskDelay(pdMS_TO_TICKS(150));
-	  digitalWrite(YELLOW_LED_PIN, HIGH);
-	  vTaskDelay(pdMS_TO_TICKS(150));
-	  digitalWrite(GREEN_LED_PIN, HIGH);
-	  vTaskDelay(pdMS_TO_TICKS(150));
-	  digitalWrite(BLUE_LED_PIN, HIGH);
-	  vTaskDelay(pdMS_TO_TICKS(5000));
-	  Serial.println("Extinguishing LEDs.");
-	  digitalWrite(RED_LED_PIN, LOW);
-	  vTaskDelay(pdMS_TO_TICKS(150));
-	  digitalWrite(YELLOW_LED_PIN, LOW);
-	  vTaskDelay(pdMS_TO_TICKS(150));
-	  digitalWrite(GREEN_LED_PIN, LOW);
-	  vTaskDelay(pdMS_TO_TICKS(150));
-	  digitalWrite(BLUE_LED_PIN, LOW);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    Serial.println("Illuminating LEDs.");
+    digitalWrite(RED_LED_PIN, HIGH);
+    vTaskDelay(pdMS_TO_TICKS(150));
+    digitalWrite(YELLOW_LED_PIN, HIGH);
+    vTaskDelay(pdMS_TO_TICKS(150));
+    digitalWrite(GREEN_LED_PIN, HIGH);
+    vTaskDelay(pdMS_TO_TICKS(150));
+    digitalWrite(BLUE_LED_PIN, HIGH);
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    Serial.println("Extinguishing LEDs.");
+    digitalWrite(RED_LED_PIN, LOW);
+    vTaskDelay(pdMS_TO_TICKS(150));
+    digitalWrite(YELLOW_LED_PIN, LOW);
+    vTaskDelay(pdMS_TO_TICKS(150));
+    digitalWrite(GREEN_LED_PIN, LOW);
+    vTaskDelay(pdMS_TO_TICKS(150));
+    digitalWrite(BLUE_LED_PIN, LOW);
 }
 
 void setup() {

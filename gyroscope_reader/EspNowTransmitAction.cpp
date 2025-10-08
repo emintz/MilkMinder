@@ -46,19 +46,19 @@ const EspNowTransmitAction::ConnectionState STATE_TRANSITION_TABLE
     EspNowTransmitAction::RECONNECTED,  // Successful
     EspNowTransmitAction::STARTING,   // Failed
   },
-  {	// RECONNECTED
+  { // RECONNECTED
     EspNowTransmitAction::CONNECTED,  // Successful
     EspNowTransmitAction::CONNECTION_LOST,  // Failed.
   },
-  {	// CONNECTED
+  { // CONNECTED
     EspNowTransmitAction::CONNECTED,  // Successful
     EspNowTransmitAction::CONNECTION_LOST,  // Failed.
   },
-  {	// CONNECTION_LOST
+  { // CONNECTION_LOST
     EspNowTransmitAction::RECONNECTED,  // Successful
     EspNowTransmitAction::DISCONNECTED,  // Failed
   },
-  {	// DISCONNECTED
+  { // DISCONNECTED
     EspNowTransmitAction::RECONNECTED,
     EspNowTransmitAction::DISCONNECTED,
   }
@@ -68,7 +68,7 @@ EspNowTransmitAction::EspNowTransmitAction(
   const uint8_t *peer_address,
   PullQueueHT<MotionNotificationMessage>& notification_send_queue,
   BlinkTask *blink_task) :
-	  notification_send_queue_(notification_send_queue),
+      notification_send_queue_(notification_send_queue),
       connection_state(STARTING),
       peer_address(peer_address),
       wait_for_incoming_in_ticks(pdMS_TO_TICKS(1)),
@@ -85,8 +85,9 @@ void EspNowTransmitAction::run() {
   bool send_message = false;
   global_blink_task->resume();
   for (;;) {
-	bool receive_status = notification_send_queue_.pull_message(&notification_message, WAIT_TIME_MILLIS);
-    if (!receive_status/* != pdTRUE */) {
+	bool receive_status = notification_send_queue_.pull_message(
+	    &notification_message, WAIT_TIME_MILLIS);
+	if (!receive_status/* != pdTRUE */) {
       notification_message.status = GYROSCOPE_SIGNAL_LOST;
       notification_message.temperature_celsius = ABSOLUTE_ZERO;
     }

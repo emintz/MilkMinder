@@ -16,7 +16,7 @@
 
 const EventRelayAction::State EventRelayAction::TRANSITION_TABLE
     [static_cast<size_t>(EventRelayAction::State::GYRO_NUMBER_OF_STATES)]
-	[LAST_NOTIFICATION_STATUS] =
+    [LAST_NOTIFICATION_STATUS] =
 {
   {  // EventRelayAction::State::GYRO_CREATED
       EventRelayAction::State::GYRO_NEW_CLOSURE_RECEIVED, // LID_HAS_NOT_MOVED
@@ -88,12 +88,12 @@ const EventRelayAction::State EventRelayAction::TRANSITION_TABLE
 #define DISCONNECTED_QUEUE_WAIT_TICKS pdMS_TO_TICKS(DISCONNECTED_QUEUE_WAIT_MILLIS)
 
 EventRelayAction::EventRelayAction(
-		  PullQueueHT<MotionNotificationMessage>& tilt_notification_queue,
-		  PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue) :
-	tilt_notification_queue_(tilt_notification_queue),
-	send_to_receiver_queue_(send_to_receiver_queue),
-    state(EventRelayAction::State::GYRO_CREATED),
-    connection_state(EventRelayAction::ReceiverConnectionState::UNKNOWN) {
+    PullQueueHT<MotionNotificationMessage>& tilt_notification_queue,
+    PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue) :
+        tilt_notification_queue_(tilt_notification_queue),
+        send_to_receiver_queue_(send_to_receiver_queue),
+        state(EventRelayAction::State::GYRO_CREATED),
+        connection_state(EventRelayAction::ReceiverConnectionState::UNKNOWN) {
   notification_message.status = LID_HAS_NOT_MOVED;
   notification_message.temperature_celsius = ABSOLUTE_ZERO;
 }
@@ -111,8 +111,9 @@ void EventRelayAction::run() {
   for (;;) {
     motion_status = PING;
     if (
-		tilt_notification_queue_.pull_message(&message, CONNECTED_QUEUE_WAIT_MILLIS)
-		&& message.status != LAST_NOTIFICATION_STATUS) {
+        tilt_notification_queue_.pull_message(
+            &message, CONNECTED_QUEUE_WAIT_MILLIS)
+        && message.status != LAST_NOTIFICATION_STATUS) {
       maybe_next_state = TRANSITION_TABLE[static_cast<size_t>(state)][message.status];
       if (maybe_next_state != EventRelayAction::State::GYRO_NUMBER_OF_STATES) {
         switch (state = maybe_next_state) {

@@ -72,7 +72,7 @@ public:
 
   EspNowTransmitAction(
     const uint8_t *peer_address,
-	PullQueueHT<MotionNotificationMessage>& notification_send_queue,
+    PullQueueHT<MotionNotificationMessage>& notification_send_queue,
     BlinkTask *blink_task);
   virtual ~EspNowTransmitAction();
 
