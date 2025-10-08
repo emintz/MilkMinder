@@ -18,6 +18,8 @@
 #define GREEN_LED_PIN  15  // Green indicator LED
 #define BLUE_LED_PIN 16  // Blue indicator LED
 #define IO_INTERRUPT_PIN 17  // TODO: change in sender, too.
+#define I2C_SCL_PIN 22  // I2C clock
+#define I2C_SDA_PIN 21  // I2C data
 #define TEMPERATURE_AND_HUMIDITY_PIN 25
 #define ALARM_PIN 33  // HIGH sounds the alarm
 
