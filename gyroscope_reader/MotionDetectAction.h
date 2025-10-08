@@ -43,9 +43,7 @@ class MotionDetectAction : public TaskAction {
 	 * The motion detection loop reads the Z acceleration, which will be 1 g
 	 * when the lid is level, and alerts when it exceeds INCLINATION_THRESHOLD.
 	 */
-//	virtual void task_loop(void);
-
-    PullQueueHT<MotionNotificationMessage>& gyroscope_event_queue_;
+  PullQueueHT<MotionNotificationMessage>& gyroscope_event_queue_;
 
 public:
 	MotionDetectAction(
@@ -59,7 +57,6 @@ public:
 	 */
 	boolean begin();
 
-
 	/**
 	 * The motion detection loop reads the tilt angle, which will be 0
 	 * when the lid is level, and alerts when exceeds  This
@@ -67,12 +64,6 @@ public:
 	 * INCLINATION_THRESHOLD. Note that the closed position is 0 degrees.
 	 */
 	virtual void run(void) override;
-
-	/**
-	 * Starts the motion detection task loop. The motion detection task detects
-	 * motion and posts a notification on the gyroscope event queue.
-	 */
-//	TaskHandle_t start_motion_detection_loop();
 };
 
 #endif /* MOTIONDETECTACTION_H_ */

@@ -20,7 +20,7 @@ MotionDetectAction::MotionDetectAction(
 		MPU6050 &gyroscope) :
 	gyroscope_event_queue_(gyroscope_event_queue),
 	gyroscope_(gyroscope),
-    temperature_sensor_(TEMPERATURE_AND_HUMIDITY_PIN) {
+	temperature_sensor_(TEMPERATURE_AND_HUMIDITY_PIN) {
 }
 
 MotionDetectAction::~MotionDetectAction() {
