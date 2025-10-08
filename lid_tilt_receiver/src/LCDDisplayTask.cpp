@@ -13,7 +13,7 @@
 #include "TimeTask.h"
 
 LCDDisplayTask::LCDDisplayTask(
-    LiquidCrystal_I2C display,
+    LiquidCrystal_I2C& display,
     TimeTask *time_task) :
       Task(
           "LCD Display",

@@ -21,7 +21,7 @@
 
 class LCDDisplayTask :
     public Task {
-  LiquidCrystal_I2C display;
+  LiquidCrystal_I2C& display;
   QueueHandle_t h_display_command_queue;
   TimeTask *time_task;
 
@@ -50,7 +50,7 @@ public:
    * time_task      Timer task, provides delivery time
    */
   LCDDisplayTask(
-      LiquidCrystal_I2C display,
+      LiquidCrystal_I2C& display,
       TimeTask *time_task);
   virtual ~LCDDisplayTask();
 

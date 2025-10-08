@@ -48,49 +48,49 @@
 #define LCD_ROWS 2
 #define LCD_COLUMNS 16
 
-QueueHandle_t h_alarm_event_queue;
-QueueHandle_t h_communications_event_queue;
-QueueHandle_t h_delivery_led_illumination_queue;
-QueueHandle_t h_display_command_queue;
-QueueHandle_t h_lid_position_report_queue;
+static QueueHandle_t h_alarm_event_queue;
+static QueueHandle_t h_communications_event_queue;
+static QueueHandle_t h_delivery_led_illumination_queue;
+static QueueHandle_t h_display_command_queue;
+static QueueHandle_t h_lid_position_report_queue;
 
-TaskHandle_t h_connection_status_task;
-TaskHandle_t h_disconnected_led_task;
-TaskHandle_t h_lid_position_report_task;
-TaskHandle_t h_lcd_display_task;
-TaskHandle_t h_delivery_led_illumination_task;
-TaskHandle_t h_milk_arrival_task;
-TaskHandle_t h_time_task;
+static TaskHandle_t h_connection_status_task;
+static TaskHandle_t h_disconnected_led_task;
+static TaskHandle_t h_lid_position_report_task;
+static TaskHandle_t h_lcd_display_task;
+static TaskHandle_t h_delivery_led_illumination_task;
+static TaskHandle_t h_milk_arrival_task;
+static TaskHandle_t h_time_task;
 
 // TODO: store the timezone in eeprom.
-TimeChangeRule usEDT = {"EDT", Second, Sun, Mar, 2, -240};  //UTC - 4 hours
-TimeChangeRule usEST = {"EST", First, Sun, Nov, 2, -300};   //UTC - 5 hours
-Timezone usEastern(usEDT, usEST);
+static TimeChangeRule usEDT = {"EDT", Second, Sun, Mar, 2, -240};  //UTC - 4 hours
+static TimeChangeRule usEST = {"EST", First, Sun, Nov, 2, -300};   //UTC - 5 hours
+static Timezone usEastern(usEDT, usEST);
 
-AlarmTask alarm_task(ALARM_PIN, YELLOW_LED_PIN);
+static AlarmTask alarm_task(ALARM_PIN, YELLOW_LED_PIN);
 
-RTC_DS3231 time_keeper;
-TimeTask time_task(&time_keeper, &usEastern);
+static RTC_DS3231 time_keeper;
+static TimeTask time_task(&time_keeper, &usEastern);
 
-MilkArrivalTask milk_arrival_task(&time_task);
+static MilkArrivalTask milk_arrival_task(&time_task);
 
-LiquidCrystal_I2C display(I2C_LCD_ADDRESS, LCD_COLUMNS, LCD_ROWS);
-LCDDisplayTask display_task(display, &time_task);
+static LiquidCrystal_I2C display(I2C_LCD_ADDRESS, LCD_COLUMNS, LCD_ROWS);
+static LCDDisplayTask display_task(display, &time_task);
 
-const uint8_t led_pins[] =
+static const uint8_t led_pins[] =
 	{RED_LED_PIN, YELLOW_LED_PIN, GREEN_LED_PIN, BLUE_LED_PIN};
 #define NUMBER_OF_LED_PINS 4
 
-RippleTask ripple_task(led_pins, NUMBER_OF_LED_PINS, 100);
+static RippleTask ripple_task(led_pins, NUMBER_OF_LED_PINS, 100);
 
-GyroConnectionWatchdogTask gyro_connection_watchdog;
+static GyroConnectionWatchdogTask gyro_connection_watchdog;
 
-ReceiverTask receiver_task(&time_task, &gyro_connection_watchdog);
+static ReceiverTask receiver_task(&time_task, &gyro_connection_watchdog);
 
-DeliveryLedTask delivery_led_task(BLUE_LED_PIN, 100, 100);
+static DeliveryLedTask delivery_led_task(BLUE_LED_PIN, 100, 100);
 
-DisconnectedLedTask disconnected_led_task(RED_LED_PIN);
-ConnectionStatusTask connection_status_task(
+static DisconnectedLedTask disconnected_led_task(RED_LED_PIN);
+static ConnectionStatusTask connection_status_task(
     &disconnected_led_task, GREEN_LED_PIN);
 
 /**

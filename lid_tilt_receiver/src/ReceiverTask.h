@@ -18,6 +18,9 @@
 #include "Task.h"
 #include "TimeTask.h"
 
+#include <esp_now.h>
+
+
 class ReceiverTask :
     public Task {
   enum LidPosition {
@@ -33,7 +36,7 @@ class ReceiverTask :
   Resettable * watchdog_timer;
 
   static void on_esp_now_received(
-      const uint8_t *mac,
+    const esp_now_recv_info* info,
       const uint8_t *received_data,
       int len);
 

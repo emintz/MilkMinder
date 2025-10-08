@@ -9,8 +9,6 @@
 
 #include "ReceiverTask.h"
 
-#include "esp_now.h"
-
 #include <stdlib.h>
 
 #include "CommunicationEvent.h"
@@ -46,7 +44,7 @@ bool ReceiverTask::begin() {
 }
 
 void ReceiverTask::on_esp_now_received(
-  const uint8_t *mac,
+  const esp_now_recv_info* info,
   const uint8_t *received_data,
   int len) {
   MotionNotificationMessage *message =
