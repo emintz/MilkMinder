@@ -5,11 +5,12 @@
  *      Author: Eric Mintz
  */
 
-#include "EspNowTransmitter.h"
-
+#include <EspNowTransmitAction.h>
 #include "TaskPriorities.h"
 
 #include "PinAssignments.h"
+
+#define WAIT_TIME_MILLIS 50
 
 enum EspSendState {
 	SUCCESSFUL,  // Send succeeded
@@ -17,9 +18,9 @@ enum EspSendState {
 	ESP_SEND_STATUS_LAST,  // MUST be last
 };
 
-BlinkTask* EspNowTransmitter::global_blink_task = NULL;
+BlinkTask* EspNowTransmitAction::global_blink_task = NULL;
 
-void EspNowTransmitter::send_callback(
+void EspNowTransmitAction::send_callback(
   const uint8_t *mac_address,
   esp_now_send_status_t send_status) {
   if (global_blink_task) {
@@ -38,41 +39,38 @@ void EspNowTransmitter::send_callback(
   }
 }
 
-const EspNowTransmitter::ConnectionState STATE_TRANSITION_TABLE
-    [EspNowTransmitter::LAST_CONNECTION_STATE]
+const EspNowTransmitAction::ConnectionState STATE_TRANSITION_TABLE
+    [EspNowTransmitAction::LAST_CONNECTION_STATE]
     [EspSendState::ESP_SEND_STATUS_LAST] = {
   {   // STARTING
-    EspNowTransmitter::RECONNECTED,  // Successful
-    EspNowTransmitter::STARTING,   // Failed
+    EspNowTransmitAction::RECONNECTED,  // Successful
+    EspNowTransmitAction::STARTING,   // Failed
   },
   {	// RECONNECTED
-    EspNowTransmitter::CONNECTED,  // Successful
-    EspNowTransmitter::CONNECTION_LOST,  // Failed.
+    EspNowTransmitAction::CONNECTED,  // Successful
+    EspNowTransmitAction::CONNECTION_LOST,  // Failed.
   },
   {	// CONNECTED
-    EspNowTransmitter::CONNECTED,  // Successful
-    EspNowTransmitter::CONNECTION_LOST,  // Failed.
+    EspNowTransmitAction::CONNECTED,  // Successful
+    EspNowTransmitAction::CONNECTION_LOST,  // Failed.
   },
   {	// CONNECTION_LOST
-    EspNowTransmitter::RECONNECTED,  // Successful
-    EspNowTransmitter::DISCONNECTED,  // Failed
+    EspNowTransmitAction::RECONNECTED,  // Successful
+    EspNowTransmitAction::DISCONNECTED,  // Failed
   },
   {	// DISCONNECTED
-    EspNowTransmitter::RECONNECTED,
-    EspNowTransmitter::DISCONNECTED,
+    EspNowTransmitAction::RECONNECTED,
+    EspNowTransmitAction::DISCONNECTED,
   }
 };
 
-EspNowTransmitter::EspNowTransmitter(
-    const uint8_t *peer_address,
-      BlinkTask *blink_task) :
-          Task(
-              "ESP-Now transmitter",
-              2048,
-              ESP_NOW_SEND_PRIORITY),
+EspNowTransmitAction::EspNowTransmitAction(
+  const uint8_t *peer_address,
+  PullQueueHT<MotionNotificationMessage>& notification_send_queue,
+  BlinkTask *blink_task) :
+	  notification_send_queue_(notification_send_queue),
       connection_state(STARTING),
       peer_address(peer_address),
-      h_notification_send_queue(0),
       wait_for_incoming_in_ticks(pdMS_TO_TICKS(1)),
       builtin_led_state(LOW) {
   notification_message.status = PING;
@@ -80,17 +78,15 @@ EspNowTransmitter::EspNowTransmitter(
   start_time = millis();
 }
 
-EspNowTransmitter::~EspNowTransmitter() {
+EspNowTransmitAction::~EspNowTransmitAction() {
 }
 
-void EspNowTransmitter::task_loop() {
+void EspNowTransmitAction::run() {
   bool send_message = false;
+  global_blink_task->resume();
   for (;;) {
-    BaseType_t receive_status = xQueueReceive(
-        h_notification_send_queue,
-        &notification_message,
-        wait_for_incoming_in_ticks);
-    if (receive_status != pdTRUE) {
+	bool receive_status = notification_send_queue_.pull_message(&notification_message, WAIT_TIME_MILLIS);
+    if (!receive_status/* != pdTRUE */) {
       notification_message.status = GYROSCOPE_SIGNAL_LOST;
       notification_message.temperature_celsius = ABSOLUTE_ZERO;
     }
@@ -136,9 +132,7 @@ void EspNowTransmitter::task_loop() {
   }
 }
 
-bool EspNowTransmitter::begin(QueueHandle_t h_notification_send_queue) {
-  this->h_notification_send_queue = h_notification_send_queue;
-
+bool EspNowTransmitAction::begin() {
   Serial.print("Initializing ESP-NOW ... ");
   esp_err_t esp_now_status = esp_now_init();
   Serial.println((esp_now_status == ESP_OK) ? "succeeded." : "failed.");
@@ -155,7 +149,7 @@ bool EspNowTransmitter::begin(QueueHandle_t h_notification_send_queue) {
     Serial.println("succeeded.");
   } else {
     Serial.print("failed with status: 0X");
-    Serial.println(peer_add_status - ESP_ERR_ESPNOW_BASE);
+    Serial.println(peer_add_status - ESP_ERR_ESPNOW_BASE, HEX);
   }
   bool callback_registration_status =
     esp_now_register_send_cb(send_callback) == ESP_OK;
@@ -163,9 +157,4 @@ bool EspNowTransmitter::begin(QueueHandle_t h_notification_send_queue) {
   Serial.println(callback_registration_status ? "succeeded." : "failed.");
 
   return true;
-}
-
-TaskHandle_t EspNowTransmitter::start() {
-    global_blink_task->resume();
-  return create_and_start_task();
 }

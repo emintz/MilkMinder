@@ -14,95 +14,98 @@
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 				<configuration artifactName="${ProjName}" buildProperties="" cleanCommand="rm -f" description="" id="io.sloeber.core.sketch.0" name="Release" parent="io.sloeber.core.configuration.release">
 					<folderInfo id="io.sloeber.core.sketch.0." name="/" resourcePath="">
-						<toolChain id="io.sloeber.core.toolChain.release.1961405475" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.502744705" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
-							<builder buildPath="${workspace_loc:/gyroscope_reader}/Release" id="io.sloeber.sketch.builder.460211376" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" parallelBuildOn="false" superClass="io.sloeber.sketch.builder"/>
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.1918034433" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.600332159" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
+						<toolChain id="io.sloeber.core.toolChain.release.443165025" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.824942030" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
+							<builder buildPath="${workspace_loc:/gyroscope_reader}/Release" id="io.sloeber.sketch.builder.1185493584" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" parallelBuildOn="false" superClass="io.sloeber.sketch.builder"/>
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.1407132883" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.1063191819" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Adafruit_BusIO}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/contracts}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/DHTNEW}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinder}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Time}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Task/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Wire/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/RTOSAid}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Adafruit_BusIO}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinderCommonCode}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/DHTNew-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Network/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/SPI/src}&quot;"/>
 								</option>
-								<inputType id="io.sloeber.compiler.cpp.sketch.input.1964963825" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
+								<inputType id="io.sloeber.compiler.cpp.sketch.input.812259764" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
-							<tool id="io.sloeber.tool.compiler.c.96305275" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.887883948" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
+							<tool id="io.sloeber.tool.compiler.c.1137310653" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.215735646" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Adafruit_BusIO}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/contracts}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/DHTNEW}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinder}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Time}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Task/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Wire/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Adafruit_BusIO}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinderCommonCode}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/DHTNew-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Network/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/RTOSAid}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/SPI/src}&quot;"/>
 								</option>
-								<inputType id="io.sloeber.compiler.c.sketch.input.1059864130" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
+								<inputType id="io.sloeber.compiler.c.sketch.input.1125953523" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
-							<tool id="io.sloeber.tool.sketch.compiler.s.1868040958" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.asm.sketch.option.incpath.1601709423" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
+							<tool id="io.sloeber.tool.sketch.compiler.s.170649347" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.asm.sketch.option.incpath.213464446" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Adafruit_BusIO}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/contracts}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/DHTNEW}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinder}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Time}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Task/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Wire/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MPU6050_light/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Adafruit_BusIO}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/MilkMinderCommonCode}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/DHTNew-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/Network/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/RTOSAid}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gyroscope_reader/libraries/SPI/src}&quot;"/>
 								</option>
-								<inputType id="io.sloeber.compiler.S.sketch.input.1809322934" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
+								<inputType id="io.sloeber.compiler.S.sketch.input.2058228020" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
-							<tool id="io.sloeber.tool.ar.1641993349" name="Arduino archiver" superClass="io.sloeber.tool.ar"/>
-							<tool id="io.sloeber.tool.combine.1734512257" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
-							<tool id="io.sloeber.tool.objcopy.eep.709496326" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
-							<tool id="io.sloeber.tool.size.1314498646" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
+							<tool id="io.sloeber.tool.ar.169751018" name="Arduino archiver" superClass="io.sloeber.tool.ar"/>
+							<tool id="io.sloeber.tool.combine.1124560640" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
+							<tool id="io.sloeber.tool.objcopy.eep.1548959654" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
+							<tool id="io.sloeber.tool.size.714478575" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/**/._*" resourcePath="libraries/**/._*">
-						<toolChain id="io.sloeber.core.toolChain5.666049596" superClass="io.sloeber.core.toolChain5">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/**/._*.356409694" name=""/>
+						<toolChain id="io.sloeber.core.toolChain5.1659014578" superClass="io.sloeber.core.toolChain5">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/**/._*.897671936" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/test*/**" resourcePath="libraries/?*/**/test*/**">
-						<toolChain id="io.sloeber.core.toolChain3.1536830498" superClass="io.sloeber.core.toolChain3">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/test*/**.1994002408" name=""/>
+						<toolChain id="io.sloeber.core.toolChain3.1528968873" superClass="io.sloeber.core.toolChain3">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/test*/**.238362464" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/?xtras/**" resourcePath="libraries/?*/**/?xtras/**">
-						<toolChain id="io.sloeber.core.toolChain2.606349496" superClass="io.sloeber.core.toolChain2">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xtras/**.1470857983" name=""/>
+						<toolChain id="io.sloeber.core.toolChain2.2079414983" superClass="io.sloeber.core.toolChain2">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xtras/**.1613348262" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/?xamples/**" resourcePath="libraries/?*/**/?xamples/**">
-						<toolChain id="io.sloeber.core.toolChain1.1194682890" superClass="io.sloeber.core.toolChain1">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xamples/**.522416063" name=""/>
+						<toolChain id="io.sloeber.core.toolChain1.1919458767" superClass="io.sloeber.core.toolChain1">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xamples/**.448904919" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/third-party/**" resourcePath="libraries/?*/**/third-party/**">
-						<toolChain id="io.sloeber.core.toolChain4.1463749667" superClass="io.sloeber.core.toolChain4">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/third-party/**.1354721515" name=""/>
+						<toolChain id="io.sloeber.core.toolChain4.1853011836" superClass="io.sloeber.core.toolChain4">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/third-party/**.75462524" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/utility/*/*" resourcePath="libraries/?*/utility/*/*">
-						<toolChain id="io.sloeber.core.toolChain6.1040987815" superClass="io.sloeber.core.toolChain6">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/utility/*/*.958832585" name=""/>
+						<toolChain id="io.sloeber.core.toolChain6.1441222568" superClass="io.sloeber.core.toolChain6">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/utility/*/*.1427422566" name=""/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/MilkMinder/.git|libraries/Time/docs|libraries/arduino-DHT/DHT_Test|libraries/Adafruit_MPU6050/assets|libraries/nI2C_master/documentation|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/DHTNew-master/.github|libraries/RTOSAid/Release|libraries/RTOSAid/.settings|libraries/RTOSAid/core|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -111,7 +114,7 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="gyroscope_reader.io.sloeber.core.sketch.1287750008" name="Arduino sketch" projectType="io.sloeber.core.sketch"/>
+		<project id="gyroscope_reader.io.sloeber.core.sketch.109668751" name="Arduino sketch" projectType="io.sloeber.core.sketch"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>

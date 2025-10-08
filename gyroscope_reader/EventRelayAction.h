@@ -10,21 +10,20 @@
  * ESP NOW transmitter.
  */
 
-#ifndef EVENTRELAYTASK_H_
-#define EVENTRELAYTASK_H_
+#ifndef EVENTRELAYACTION_H_
+#define EVENTRELAYACTION_H_
 
 #include "Arduino.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
-#include "freertos/task.h"
+
+#include "PullQueueHT.h"
 
 #include "MotionNotificationMessage.h"
-#include "Task.h"
+#include "TaskAction.h"
 
-class EventRelayTask :
-    public Task {
+class EventRelayAction : public TaskAction {
 
-  enum ReceiverConnectionState {
+  enum class ReceiverConnectionState {
     UNKNOWN,
     CONNECTED,
     DISCONNECTED,
@@ -32,7 +31,7 @@ class EventRelayTask :
 
 private:
 
-  enum State {
+  enum class State {
     GYRO_CREATED,
     GYRO_NEW_CLOSURE_RECEIVED,
     GYRO_VERIFYING_CLOSURE,
@@ -45,44 +44,25 @@ private:
   };
 
   static const State TRANSITION_TABLE
-      [GYRO_NUMBER_OF_STATES][LAST_NOTIFICATION_STATUS];
+      [static_cast<size_t>(State::GYRO_NUMBER_OF_STATES)]
+	  [LAST_NOTIFICATION_STATUS];
 
+  PullQueueHT<MotionNotificationMessage>& tilt_notification_queue_;
+  PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue_;
   State state;
   ReceiverConnectionState connection_state;
-  QueueHandle_t h_tilt_notification_queue;
-  QueueHandle_t h_send_to_receiver_queue;
-  uint32_t tilt_start_time_millis;
-  uint32_t tilt_signal_active_millis;
-  TickType_t queue_wait_time_millis;
   MotionNotificationMessage notification_message;
 
-  /**
-   * The send task loop.
-   */
-  virtual void task_loop();
-
 public:
-  EventRelayTask();
-  virtual ~EventRelayTask();
+  EventRelayAction(
+		  PullQueueHT<MotionNotificationMessage>& tilt_notification_queue,
+		  PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue);
+  virtual ~EventRelayAction();
 
   /**
-   * Initialize the send task.
-   *
-   * Parameters:
-   *
-   * Name                      Contents
-   * ------------------------- ------------------------------------------------
-   * h_tilt_notification_queue Incoming messages from the Gyroscope Task
-   * h_send_to_receiver_queue  Messages to send via ESP NOW
+   * The action loop.
    */
-  void begin(
-    QueueHandle_t h_tilt_notification_queue,
-    QueueHandle_t h_send_to_receiver_queue);
-
-  /**
-   * Start the send loop
-   */
-  TaskHandle_t start_send_loop(void);
+  virtual void run() override;
 };
 
-#endif /* EVENTRELAYTASK_H_ */
+#endif /* EVENTRELAYACTION_H_ */

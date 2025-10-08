@@ -7,23 +7,23 @@
  * Task that sends messages to an ESP-NOW receiver.
  */
 
-#ifndef ESPNOWTRANSMITTER_H_
-#define ESPNOWTRANSMITTER_H_
+#ifndef ESPNOWTRANSMITACTION_H_
+#define ESPNOWTRANSMITACTION_H_
 
 #include "Arduino.h"
 
 #include "esp_now.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
+
+#include "PullQueueHT.h"
+#include "TaskAction.h"
 
 #include "BlinkTask.h"
 #include "MotionNotificationMessage.h"
-#include "Task.h"
 
-class EspNowTransmitter :
-    public Task {
+class EspNowTransmitAction : public TaskAction {
 public:
   enum ConnectionState {
     STARTING,  // Establishing connection at startup.
@@ -35,12 +35,11 @@ public:
   };
 
 private:
-  static EspNowTransmitter *instance;
   static BlinkTask *global_blink_task;
+  PullQueueHT<MotionNotificationMessage>& notification_send_queue_;
   ConnectionState connection_state;
   const uint8_t *peer_address;
   uint32_t start_time;
-  QueueHandle_t h_notification_send_queue;
   MotionNotificationMessage notification_message;
   TickType_t wait_for_incoming_in_ticks;
   uint8_t builtin_led_state;
@@ -49,10 +48,6 @@ private:
     const uint8_t *mac_address,
     esp_now_send_status_t send_status);
 
-  /**
-   * The task loop.
-   */
-  virtual void task_loop(void);
 public:
 
   static void set_blink_task(BlinkTask *blink_task) {
@@ -75,21 +70,15 @@ public:
    * before binding it to an EspNowTransmitter.
    */
 
-  EspNowTransmitter(
+  EspNowTransmitAction(
     const uint8_t *peer_address,
+	PullQueueHT<MotionNotificationMessage>& notification_send_queue,
     BlinkTask *blink_task);
-  virtual ~EspNowTransmitter();
+  virtual ~EspNowTransmitAction();
 
   /**
    * Initialize the transmitter. Disable the error indication blink
    * and connect to the receiver. This might take some time.
-   *
-   * Arguments
-   *
-   * Name                      Contents
-   * ------------------------- ---------------------------------------------------
-   * h_notification_send_queue Queue that supplies incoming motion
-   *                           notifications
    *
    * Note: BE SURE to invoke EspNowTransmitter::begin() before sending
    * messages on the notification send queue. Sending messages before
@@ -98,13 +87,13 @@ public:
    *
    * TODO: consider implementing a timeout.
    */
-  bool begin(QueueHandle_t h_notification_send_queue);
+  bool begin();
 
   /**
-   * Start the task. Note that you must invoke begin() before starting the
-   * task.
+   * Invoked by the containing task to run the action. Application code
+   * MUST NOT invoke.
    */
-  TaskHandle_t start();
+  virtual void run(void);
 };
 
-#endif /* ESPNOWTRANSMITTER_H_ */
+#endif /* ESPNOWTRANSMITACTION_H_ */

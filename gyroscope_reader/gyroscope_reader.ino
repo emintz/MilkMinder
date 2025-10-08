@@ -1,3 +1,8 @@
+#include <EspNowTransmitAction.h>
+#include <EventRelayAction.h>
+#include <GyroUpdateAction.h>
+#include <MotionDetectAction.h>
+
 #include "Arduino.h"
 
 /**
@@ -7,48 +12,73 @@
 #include "Arduino.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
 
 #include "esp_now.h"
 
+#include "MPU6050_light.h"
+#include "PullQueueHT.h"
+#include "TaskWithActionH.h"
 #include "Wire.h"
 #include "WiFi.h"
 
 #include "BlinkTask.h"
 #include "CommunicationSettings.h"
-#include "EspNowTransmitter.h"
-#include "EventRelayTask.h"
-#include "GyroscopeTask.h"
 #include "PinAssignments.h"
+#include "TaskPriorities.h"
 
 #include "MotionNotificationMessage.h"
 
+static PullQueueHT<MotionNotificationMessage> gyroscope_event_queue(10);
+static PullQueueHT<MotionNotificationMessage> notification_send_queue(10);
 
-QueueHandle_t h_gyroscope_event_queue;
-QueueHandle_t h_notification_send_queue;
-TaskHandle_t h_connection_dropped_blink_task;
-TaskHandle_t h_gyroscope_update_task;
-TaskHandle_t h_motion_detection_task;
-TaskHandle_t h_event_relay_task;
-TaskHandle_t h_esp_now_transmit_task;
+static TaskHandle_t h_connection_dropped_blink_task;
 
-BlinkTask connection_dropped_signal(
+static MPU6050 gyroscope(Wire);
+
+static BlinkTask connection_dropped_signal(
   "Receiver connection lost",
   RED_LED_PIN,
   3,
   150,
   500);
 
-EspNowTransmitter esp_now_transmitter(
+static EspNowTransmitAction esp_now_transmit_action(
   receiver_address,
+  notification_send_queue,
   &connection_dropped_signal);
+static TaskWithActionH esp_now_transmit_task(
+		"ESP-Now transmit",
+		ESP_NOW_SEND_PRIORITY,
+		&esp_now_transmit_action,
+		4096);
 
-GyroscopeTask gyroscope_task;
+static GyroUpdateAction gyro_update_action(gyroscope);
+static TaskWithActionH gyro_refresh_task(
+		"Refresh Gyro",
+		GYROSCOPE_UPDATE_PIORITY,
+		&gyro_update_action,
+		4096);
 
-EventRelayTask event_relay_task;
+static MotionDetectAction motion_detect_action(
+		gyroscope_event_queue,
+		gyroscope);
+static TaskWithActionH motion_detect_task(
+		"Detect Motion",
+		MOTION_DETECTION_PRIORITY,
+		&motion_detect_action,
+		4096);
 
-void start_blink_tasks() {
+static EventRelayAction event_relay_action(
+		gyroscope_event_queue,
+		notification_send_queue);
+static TaskWithActionH event_relay_task(
+		"Event Relay",
+		RELAY_PRIORITY,
+		&event_relay_action,
+		4096);
+
+static void start_blink_tasks() {
   Serial.print("Starting blink task ... ");
   h_connection_dropped_blink_task =
     connection_dropped_signal.start_blink_loop("ESP_NOW connection");
@@ -59,7 +89,47 @@ void start_blink_tasks() {
   } else {
     Serial.print("failed.");
   }
-  EspNowTransmitter::set_blink_task(&connection_dropped_signal);
+  EspNowTransmitAction::set_blink_task(&connection_dropped_signal);
+}
+
+/**
+ * Configures GPIO pins that drive LEDs and runs the initial
+ * lamp test.
+ */
+static void init_leds(void) {
+	  pinMode(SYSTEM_IS_LIVE_LED_PIN, OUTPUT);
+	  digitalWrite(SYSTEM_IS_LIVE_LED_PIN, LOW);
+
+	  pinMode(RED_LED_PIN, OUTPUT);
+	  pinMode(YELLOW_LED_PIN, OUTPUT);
+	  pinMode(GREEN_LED_PIN, OUTPUT);
+	  pinMode(BLUE_LED_PIN, OUTPUT);
+
+	  digitalWrite(RED_LED_PIN, LOW);
+	  digitalWrite(YELLOW_LED_PIN, LOW);
+	  digitalWrite(GREEN_LED_PIN, LOW);
+	  digitalWrite(BLUE_LED_PIN, LOW);
+
+		// Lamp test
+
+	  vTaskDelay(pdMS_TO_TICKS(1000));
+	  Serial.println("Illuminating LEDs.");
+	  digitalWrite(RED_LED_PIN, HIGH);
+	  vTaskDelay(pdMS_TO_TICKS(150));
+	  digitalWrite(YELLOW_LED_PIN, HIGH);
+	  vTaskDelay(pdMS_TO_TICKS(150));
+	  digitalWrite(GREEN_LED_PIN, HIGH);
+	  vTaskDelay(pdMS_TO_TICKS(150));
+	  digitalWrite(BLUE_LED_PIN, HIGH);
+	  vTaskDelay(pdMS_TO_TICKS(5000));
+	  Serial.println("Extinguishing LEDs.");
+	  digitalWrite(RED_LED_PIN, LOW);
+	  vTaskDelay(pdMS_TO_TICKS(150));
+	  digitalWrite(YELLOW_LED_PIN, LOW);
+	  vTaskDelay(pdMS_TO_TICKS(150));
+	  digitalWrite(GREEN_LED_PIN, LOW);
+	  vTaskDelay(pdMS_TO_TICKS(150));
+	  digitalWrite(BLUE_LED_PIN, LOW);
 }
 
 void setup() {
@@ -69,49 +139,30 @@ void setup() {
   Serial.print(" at ");
   Serial.println(__TIME__);
 
-  pinMode(SYSTEM_IS_LIVE_LED_PIN, OUTPUT);
-  digitalWrite(SYSTEM_IS_LIVE_LED_PIN, LOW);
-
-  pinMode(RED_LED_PIN, OUTPUT);
-  pinMode(YELLOW_LED_PIN, OUTPUT);
-  pinMode(GREEN_LED_PIN, OUTPUT);
-  pinMode(BLUE_LED_PIN, OUTPUT);
-
-  digitalWrite(RED_LED_PIN, LOW);
-  digitalWrite(YELLOW_LED_PIN, LOW);
-  digitalWrite(GREEN_LED_PIN, LOW);
-  digitalWrite(BLUE_LED_PIN, LOW);
-
-	// Lamp test
-
-  vTaskDelay(pdMS_TO_TICKS(1000));
-  Serial.println("Illuminating LEDs.");
-  digitalWrite(RED_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(YELLOW_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(GREEN_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(BLUE_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(5000));
-  Serial.println("Extinguishing LEDs.");
-  digitalWrite(RED_LED_PIN, LOW);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(YELLOW_LED_PIN, LOW);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(GREEN_LED_PIN, LOW);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(BLUE_LED_PIN, LOW);
+  init_leds();
 
   /**
    * Initialize low-level I/O.
    */
+  Serial.println("Illuminating yellow.");
+  digitalWrite(YELLOW_LED_PIN, HIGH);
   Serial.print("Configuring WiFi ... ");
+  Serial.flush();
+  digitalWrite(RED_LED_PIN, HIGH);
+  vTaskDelay(pdMS_TO_TICKS(100));
+  digitalWrite(RED_LED_PIN, LOW);
+  digitalWrite(RED_LED_PIN, HIGH);
+  vTaskDelay(pdMS_TO_TICKS(100));
+  digitalWrite(RED_LED_PIN, LOW);
   Serial.println(WiFi.mode(WIFI_STA) ? "succeeded." : "failed.");
 
-  Serial.print("Initializing I2C ");
-  Wire.setPins(21, 22);
+  digitalWrite(GREEN_LED_PIN, HIGH);
+  Serial.println("Initializing I2C ... ");
+  Serial.flush();
+  Wire.setPins(I2C_SDA_PIN, I2C_SCL_PIN);
   Wire.begin();
+  digitalWrite(GREEN_LED_PIN, LOW);
+  digitalWrite(YELLOW_LED_PIN, LOW);
   Serial.println(" done.");
 
   /**
@@ -119,27 +170,26 @@ void setup() {
    */
   Serial.println("Creating event queues.");
   Serial.print("Gyroscope event queue ");
-  h_gyroscope_event_queue =
-    xQueueCreate(10, sizeof(MotionNotificationMessage));
-  Serial.println(h_gyroscope_event_queue ? "created." : "failed.");
+  Serial.println(gyroscope_event_queue.begin() ? "created." : "failed.");
 
   Serial.print("Receiver notification queue ... ");
-  h_notification_send_queue =
-    xQueueCreate(10, sizeof(MotionNotificationMessage));
-  Serial.println(h_notification_send_queue ? "created." : "failed.");
+  Serial.println(notification_send_queue.begin() ? "created." : "failed.");
   Serial.println("Queue setup completed.");
+
+  /**
+   * Initialize the gyroscope connection so that we
+   * can read the lid tilt angle. The actual read
+   * is started below.
+   */
+  gyroscope.begin();
+  Serial.println("Gyroscope initialized.");
 
   /**
    * Configure tasks.
    */
   Serial.println("Configuring tasks.");
   Serial.println("Gyroscope manager.");
-  gyroscope_task.begin(h_gyroscope_event_queue);
-
-  Serial.println("Event relay task.");
-  event_relay_task.begin(
-    h_gyroscope_event_queue,
-    h_notification_send_queue);
+  motion_detect_action.begin();
 
   /**
    * Start tasks.
@@ -148,22 +198,30 @@ void setup() {
   start_blink_tasks();
 
   Serial.println("Configuring ESP-NOW transmitter.");
-  esp_now_transmitter.begin(h_notification_send_queue);
+  esp_now_transmit_action.begin();
 
-  h_event_relay_task = event_relay_task.start_send_loop();
+  Serial.println("Event relay task.");
 
-  h_esp_now_transmit_task = esp_now_transmitter.start();
+  if (event_relay_task.start()) {
+	  Serial.println("Relay task started.");
+  } else {
+	  Serial.println("Relay task failed to start.");
+  }
 
-  h_gyroscope_update_task = gyroscope_task.start_update_loop();
+  esp_now_transmit_task.start();
+  Serial.println("ESP Now transmitter started");
 
-  h_motion_detection_task = gyroscope_task.start_motion_detection_loop();
+  gyro_refresh_task.start();
+  motion_detect_task.start();
 
   Serial.println("Setup completed.");
   Serial.flush();
 }
 
-// The loop function is called in an endless loop until we cancel the
-// invoking task.
+/**
+ * The loop function is called in an endless loop. There's
+ * nothing  to do so we cancel the invoking task.
+ */
 void loop() {
   vTaskDelete(NULL);
 }

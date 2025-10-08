@@ -8,98 +8,71 @@
  * acceleration is <= .9 g.
  */
 
-#ifndef GYROSCOPETASK_H_
-#define GYROSCOPETASK_H_
+#ifndef MOTIONDETECTACTION_H_
+#define MOTIONDETECTACTION_H_
 
 #include "Arduino.h"
 #include "dhtnew.h"
+#include "MPU6050_light.h"
+#include "PullQueueHT.h"
 #include "Wire.h"
 
-#include "MPU6050_light.h"
-
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
 
 #include "MotionNotificationMessage.h"
 #include "PinAssignments.h"
 #include "Task.h"
+#include "TaskAction.h"
+
+#define DEGREES_TO_RADIANS (PI / 180.0)
+#define RADIANS_TO_DEGREES (180.0 / PI)
+#define INCLINATION_THRESHOLD (PI / 6)
 
 /**
- * Manages the MPU6050 gyroscope, keeping its data current and detecting
- * motion. Notifies the event forwarder when the gyro's Z offset exceeds
- * a threshold or returns to the vertical.
+ * Monitors the MPU6050 gyroscope to detect motion. Notifies the event
+ * forwarder when the gyro's Z offset exceeds the lid open threshold
+ * or returns to the horizontal.
  */
-class GyroscopeTask :
-    public Task {
-
-  /**
-   * Runs the update loop that refreshes the gyroscope's position data. The
-   * gyroscope integrates acceleration into velocity and position.
-   *
-   * The update loop updates the MPU6050 readings every 2 microseconds to keep
-   * its readings up to date. Update is performed on a best efforts basis.
-   * Since the update task has extremely low priority, it might not
-   * honor its update SLA. Assuming the SLA violation occurs infrequently,
-   * this should not pose a problem.
-   */
-  class UpdateTask :
-      Task {
-    MPU6050 *gyroscope;
-
-  public:
-    UpdateTask();
-    virtual ~UpdateTask();
-
-    /**
-     * Starts the gyroscope update task.
-     */
-    TaskHandle_t start(MPU6050 *gyroscope);
-
-    /**
-     * The update loop updates the MPU6050 readings every 2 microseconds on a
-     * best efforts basis. Since it has extremely low priority, it might not
-     * make its SLA.
-     */
-    virtual void task_loop();
-  };
-
-  UpdateTask update_task;
-	QueueHandle_t h_gyro_event_queue;  // Post motion notification here.
-	MPU6050 gyroscope;  // The MPU6050
-	DHTNEW temperature_sensor;
-	MotionNotificationMessage notification_message;
+class MotionDetectAction : public TaskAction {
+	MPU6050& gyroscope_;
+	DHTNEW temperature_sensor_;
+	MotionNotificationMessage notification_message_;
 
 	/**
 	 * The motion detection loop reads the Z acceleration, which will be 1 g
-	 * when the lid is level, and alerts when it falls to or below .9 g. This
-	 * happens when the lid is raised approximately 26 degrees.
+	 * when the lid is level, and alerts when it exceeds INCLINATION_THRESHOLD.
 	 */
-	virtual void task_loop(void);
+//	virtual void task_loop(void);
+
+    PullQueueHT<MotionNotificationMessage>& gyroscope_event_queue_;
 
 public:
-	GyroscopeTask();
-	virtual ~GyroscopeTask();
+	MotionDetectAction(
+		PullQueueHT<MotionNotificationMessage>& gyroscope_event_queue,
+		MPU6050 &gyroscope);
+	virtual ~MotionDetectAction();
 
 	/**
 	 * Configure the gyroscope and bind the task to its queue handle. Note
 	 * that the task sends gyroscope events to the specified queue.
 	 */
-	boolean begin(QueueHandle_t h_gyro_event_queue);
+	boolean begin();
+
+
+	/**
+	 * The motion detection loop reads the tilt angle, which will be 0
+	 * when the lid is level, and alerts when exceeds  This
+	 * happens when the tilt angle off the horizontal exceeds
+	 * INCLINATION_THRESHOLD. Note that the closed position is 0 degrees.
+	 */
+	virtual void run(void) override;
 
 	/**
 	 * Starts the motion detection task loop. The motion detection task detects
 	 * motion and posts a notification on the gyroscope event queue.
 	 */
-	TaskHandle_t start_motion_detection_loop();
-
-	/**
-	 * Start the update loop. Invoke this immediately after begin() has run
-	 * successfully. The update loop integrates gyroscope readings into
-	 * offset angles.
-	 */
-
-	TaskHandle_t start_update_loop();
+//	TaskHandle_t start_motion_detection_loop();
 };
 
-#endif /* GYROSCOPETASK_H_ */
+#endif /* MOTIONDETECTACTION_H_ */
