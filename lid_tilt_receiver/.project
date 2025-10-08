@@ -3,6 +3,7 @@
 	<name>lid_tilt_receiver</name>
 	<comment></comment>
 	<projects>
+		<project>common_code</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -34,17 +35,17 @@
 		<link>
 			<name>core/core</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.9/cores/esp32</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/cores/esp32</locationURI>
 		</link>
 		<link>
 			<name>core/variant</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.9/variants/node32s</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/variants/node32s</locationURI>
 		</link>
 		<link>
 			<name>libraries/Adafruit_BusIO</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Adafruit_BusIO/1.14.1</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Adafruit_BusIO/1.17.1</locationURI>
 		</link>
 		<link>
 			<name>libraries/LiquidCrystal_I2C</name>
@@ -52,9 +53,14 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/LiquidCrystal_I2C/1.1.2</locationURI>
 		</link>
 		<link>
-			<name>libraries/MilkMinder</name>
+			<name>libraries/MilkMinderCommonCode</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/MilkMinder/0.9</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/libraries/MilkMinderCommonCode</locationURI>
+		</link>
+		<link>
+			<name>libraries/Network</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/libraries/Network</locationURI>
 		</link>
 		<link>
 			<name>libraries/Queue</name>
@@ -64,12 +70,12 @@
 		<link>
 			<name>libraries/RTClib</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/RTClib/2.1.1</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/RTClib/2.1.4</locationURI>
 		</link>
 		<link>
 			<name>libraries/SPI</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.9/libraries/SPI</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/libraries/SPI</locationURI>
 		</link>
 		<link>
 			<name>libraries/Time</name>
@@ -77,19 +83,29 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Time/1.6.1</locationURI>
 		</link>
 		<link>
+			<name>libraries/Time-master</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/libraries/Time-master</locationURI>
+		</link>
+		<link>
 			<name>libraries/Timezone</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Timezone/1.2.4</locationURI>
 		</link>
 		<link>
+			<name>libraries/Timezone-master</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/libraries/Timezone-master</locationURI>
+		</link>
+		<link>
 			<name>libraries/WiFi</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.9/libraries/WiFi</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/libraries/WiFi</locationURI>
 		</link>
 		<link>
 			<name>libraries/Wire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/2.0.9/libraries/Wire</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp32/hardware/esp32/3.2.0/libraries/Wire</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
