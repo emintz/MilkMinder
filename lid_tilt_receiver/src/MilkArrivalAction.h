@@ -13,7 +13,8 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
-#include "freertos/semphr.h"
+
+#include "MutexH.h"
 
 #include "Action.h"
 
@@ -22,9 +23,8 @@
 class MilkArrivalAction : public Action {
 
   QueueHandle_t h_lid_position_report_queue;
-  SemaphoreHandle_t h_mutex;
   LidPositionReport::PositionValue timeout_report;
-  StaticSemaphore_t semaphore_buffer;
+  MutexH mutex_;
 
 public:
   MilkArrivalAction();
@@ -32,7 +32,7 @@ public:
 
   /**
    * Initialize the action. Be sure to invoke this method before the
-   * action runs.
+   * action runs. Note that this method is NOT thread safe.
    *
    * Parameters
    *
