@@ -16,6 +16,7 @@
 #include "Wire.h"
 #include "RTClib.h"
 #include "LiquidCrystal_I2C.h"
+#include "PullQueueHT.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
@@ -56,7 +57,6 @@ static QueueHandle_t h_lid_position_report_queue;
 
 static TaskHandle_t h_connection_status_task;
 static TaskHandle_t h_disconnected_led_task;
-static TaskHandle_t h_lid_position_report_task;
 static TaskHandle_t h_lcd_display_task;
 static TaskHandle_t h_delivery_led_illumination_task;
 static TaskHandle_t h_milk_arrival_task;
@@ -66,6 +66,13 @@ static TaskHandle_t h_time_task;
 static TimeChangeRule usEDT = {"EDT", Second, Sun, Mar, 2, -240};  //UTC - 4 hours
 static TimeChangeRule usEST = {"EST", First, Sun, Nov, 2, -300};   //UTC - 5 hours
 static Timezone usEastern(usEDT, usEST);
+
+// Event queues
+static PullQueueHT<AlarmTask::AlarmTaskMessage> alarm_event_queue(3);
+static PullQueueHT<CommunicationEvent> communications_event_queue(3);
+static PullQueueHT<LedIlluminationMessage> delivery_led_illumination_queue(3);
+static PullQueueHT<DisplayMessage> display_command_queue(3);
+static PullQueueHT<LidPositionReport> lid_position_report_queue(3);
 
 static AlarmTask alarm_task(ALARM_PIN, YELLOW_LED_PIN);
 
@@ -110,12 +117,21 @@ void setup() {
 
   digitalWrite(BUILTIN_LED_PIN, LOW);
 
-  h_alarm_event_queue = xQueueCreate(3, sizeof(AlarmTask::AlarmTaskMessage));
-  h_communications_event_queue = xQueueCreate(3, sizeof(CommunicationEvent));
-  h_delivery_led_illumination_queue =
-      xQueueCreate(3, sizeof(LedIlluminationMessage));
-  h_display_command_queue = xQueueCreate(3, sizeof(DisplayMessage));
-  h_lid_position_report_queue = xQueueCreate(3, sizeof(LidPositionReport));
+  alarm_event_queue.begin();
+  h_alarm_event_queue = alarm_event_queue.handle();
+      // was: xQueueCreate(3, sizeof(AlarmTask::AlarmTaskMessage));
+  communications_event_queue.begin();
+  h_communications_event_queue = communications_event_queue.handle();
+      // was: xQueueCreate(3, sizeof(CommunicationEvent));
+  delivery_led_illumination_queue.begin();
+  h_delivery_led_illumination_queue = delivery_led_illumination_queue.handle();
+      // WasL xQueueCreate(3, sizeof(LedIlluminationMessage));
+  display_command_queue.begin();
+  h_display_command_queue = display_command_queue.handle();
+      // Was: xQueueCreate(3, sizeof(DisplayMessage));
+  lid_position_report_queue.begin();
+  h_lid_position_report_queue = lid_position_report_queue.handle();
+      // Was: xQueueCreate(3, sizeof(LidPositionReport));
 
   h_lcd_display_task = display_task.start(h_display_command_queue);
   DisplayMessage display_message;
