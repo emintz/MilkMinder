@@ -19,7 +19,6 @@
 #include "PullQueueHT.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
 
 #include "soc/rtc.h"
@@ -119,19 +118,14 @@ void setup() {
 
   alarm_event_queue.begin();
   h_alarm_event_queue = alarm_event_queue.handle();
-      // was: xQueueCreate(3, sizeof(AlarmTask::AlarmTaskMessage));
   communications_event_queue.begin();
   h_communications_event_queue = communications_event_queue.handle();
-      // was: xQueueCreate(3, sizeof(CommunicationEvent));
   delivery_led_illumination_queue.begin();
   h_delivery_led_illumination_queue = delivery_led_illumination_queue.handle();
-      // WasL xQueueCreate(3, sizeof(LedIlluminationMessage));
   display_command_queue.begin();
   h_display_command_queue = display_command_queue.handle();
-      // Was: xQueueCreate(3, sizeof(DisplayMessage));
   lid_position_report_queue.begin();
   h_lid_position_report_queue = lid_position_report_queue.handle();
-      // Was: xQueueCreate(3, sizeof(LidPositionReport));
 
   h_lcd_display_task = display_task.start(h_display_command_queue);
   DisplayMessage display_message;
@@ -141,7 +135,7 @@ void setup() {
   memset(&display_message, 0, sizeof(display_message));
 
   display_message.command = LCD_DISCONNECTED;
-  xQueueSendToBack(h_display_command_queue, &display_message, 0);
+  display_command_queue.send_message(&display_message);
 
   digitalWrite(WHITE_LED_PIN, HIGH);
   ripple_task.start();
