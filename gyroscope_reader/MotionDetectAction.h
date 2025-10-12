@@ -4,8 +4,8 @@
  *  Created on: Dec 23, 2022
  *      Author: Eric Mintz
  *
- * Read the Gyroscope and send messages. The task signals tilt when the Z
- * acceleration is <= .9 g.
+ * Read the Gyroscope and send messages. The task signals tilt when the
+ * tilt from the horizontal exceeds the lid open threshold.
  */
 
 #ifndef MOTIONDETECTACTION_H_

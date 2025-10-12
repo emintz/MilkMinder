@@ -13,9 +13,9 @@
 #define WAIT_TIME_MILLIS 50
 
 enum EspSendState {
-	SUCCESSFUL,  // Send succeeded
-	FAILED,  // Send failed.
-	ESP_SEND_STATUS_LAST,  // MUST be last
+  SUCCESSFUL,  // Send succeeded
+  FAILED,  // Send failed.
+  ESP_SEND_STATUS_LAST,  // MUST be last
 };
 
 BlinkTask* EspNowTransmitAction::global_blink_task = NULL;
@@ -85,9 +85,9 @@ void EspNowTransmitAction::run() {
   bool send_message = false;
   global_blink_task->resume();
   for (;;) {
-	bool receive_status = notification_send_queue_.pull_message(
-	    &notification_message, WAIT_TIME_MILLIS);
-	if (!receive_status/* != pdTRUE */) {
+    bool receive_status = notification_send_queue_.pull_message(
+        &notification_message, WAIT_TIME_MILLIS);
+    if (!receive_status) {
       notification_message.status = GYROSCOPE_SIGNAL_LOST;
       notification_message.temperature_celsius = ABSOLUTE_ZERO;
     }

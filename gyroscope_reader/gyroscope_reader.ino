@@ -97,39 +97,39 @@ static void start_blink_tasks() {
  * lamp test.
  */
 static void init_leds(void) {
-    pinMode(SYSTEM_IS_LIVE_LED_PIN, OUTPUT);
-    digitalWrite(SYSTEM_IS_LIVE_LED_PIN, LOW);
+  pinMode(SYSTEM_IS_LIVE_LED_PIN, OUTPUT);
+  digitalWrite(SYSTEM_IS_LIVE_LED_PIN, LOW);
 
-    pinMode(RED_LED_PIN, OUTPUT);
-    pinMode(YELLOW_LED_PIN, OUTPUT);
-    pinMode(GREEN_LED_PIN, OUTPUT);
-    pinMode(BLUE_LED_PIN, OUTPUT);
+  pinMode(RED_LED_PIN, OUTPUT);
+  pinMode(YELLOW_LED_PIN, OUTPUT);
+  pinMode(GREEN_LED_PIN, OUTPUT);
+  pinMode(BLUE_LED_PIN, OUTPUT);
 
-    digitalWrite(RED_LED_PIN, LOW);
-    digitalWrite(YELLOW_LED_PIN, LOW);
-    digitalWrite(GREEN_LED_PIN, LOW);
-    digitalWrite(BLUE_LED_PIN, LOW);
+  digitalWrite(RED_LED_PIN, LOW);
+  digitalWrite(YELLOW_LED_PIN, LOW);
+  digitalWrite(GREEN_LED_PIN, LOW);
+  digitalWrite(BLUE_LED_PIN, LOW);
 
-      // Lamp test
+    // Lamp test
 
-    vTaskDelay(pdMS_TO_TICKS(1000));
-    Serial.println("Illuminating LEDs.");
-    digitalWrite(RED_LED_PIN, HIGH);
-    vTaskDelay(pdMS_TO_TICKS(150));
-    digitalWrite(YELLOW_LED_PIN, HIGH);
-    vTaskDelay(pdMS_TO_TICKS(150));
-    digitalWrite(GREEN_LED_PIN, HIGH);
-    vTaskDelay(pdMS_TO_TICKS(150));
-    digitalWrite(BLUE_LED_PIN, HIGH);
-    vTaskDelay(pdMS_TO_TICKS(5000));
-    Serial.println("Extinguishing LEDs.");
-    digitalWrite(RED_LED_PIN, LOW);
-    vTaskDelay(pdMS_TO_TICKS(150));
-    digitalWrite(YELLOW_LED_PIN, LOW);
-    vTaskDelay(pdMS_TO_TICKS(150));
-    digitalWrite(GREEN_LED_PIN, LOW);
-    vTaskDelay(pdMS_TO_TICKS(150));
-    digitalWrite(BLUE_LED_PIN, LOW);
+  vTaskDelay(pdMS_TO_TICKS(1000));
+  Serial.println("Illuminating LEDs.");
+  digitalWrite(RED_LED_PIN, HIGH);
+  vTaskDelay(pdMS_TO_TICKS(150));
+  digitalWrite(YELLOW_LED_PIN, HIGH);
+  vTaskDelay(pdMS_TO_TICKS(150));
+  digitalWrite(GREEN_LED_PIN, HIGH);
+  vTaskDelay(pdMS_TO_TICKS(150));
+  digitalWrite(BLUE_LED_PIN, HIGH);
+  vTaskDelay(pdMS_TO_TICKS(5000));
+  Serial.println("Extinguishing LEDs.");
+  digitalWrite(RED_LED_PIN, LOW);
+  vTaskDelay(pdMS_TO_TICKS(150));
+  digitalWrite(YELLOW_LED_PIN, LOW);
+  vTaskDelay(pdMS_TO_TICKS(150));
+  digitalWrite(GREEN_LED_PIN, LOW);
+  vTaskDelay(pdMS_TO_TICKS(150));
+  digitalWrite(BLUE_LED_PIN, LOW);
 }
 
 void setup() {
@@ -203,9 +203,9 @@ void setup() {
   Serial.println("Event relay task.");
 
   if (event_relay_task.start()) {
-	  Serial.println("Relay task started.");
+    Serial.println("Relay task started.");
   } else {
-	  Serial.println("Relay task failed to start.");
+    Serial.println("Relay task failed to start.");
   }
 
   esp_now_transmit_task.start();
