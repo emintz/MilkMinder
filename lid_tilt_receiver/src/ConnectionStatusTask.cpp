@@ -43,16 +43,16 @@ const ConnectionStatusTask::State ConnectionStatusTask::TRANSITION_TABLE
 };
 
 ConnectionStatusTask::ConnectionStatusTask(
-    DisconnectedLedTask *disconnected_led_task,
-    uint8_t connected_led_pin,
-    PullQueueHT<ConnectionStatusMessage>& connection_status_queue,
-    PullQueueHT<DisplayMessage>& display_command_queue) :
-        Task("Network status", 2048, 15),
-        state(NET_INITIALIZED),
-        disconnected_led_task(disconnected_led_task),
-        connected_led_pin(connected_led_pin),
-        connection_status_queue_(connection_status_queue),
-        display_command_queue_(display_command_queue) {
+  DisconnectedLedTask *disconnected_led_task,
+  uint8_t connected_led_pin,
+  PullQueueHT<ConnectionStatusMessage>& connection_status_queue,
+  PullQueueHT<DisplayMessage>& display_command_queue) :
+    Task("Network status", 2048, 15),
+    state(NET_INITIALIZED),
+    disconnected_led_task(disconnected_led_task),
+    connected_led_pin(connected_led_pin),
+    connection_status_queue_(connection_status_queue),
+    display_command_queue_(display_command_queue) {
 }
 
 ConnectionStatusTask::~ConnectionStatusTask() {

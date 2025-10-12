@@ -13,13 +13,13 @@ DeliveryLedTask::DeliveryLedTask(
     uint8_t led_pin,
     uint16_t on_time_ms,
     uint16_t off_time_ms) :
-    Task("Delivery LED",
-        2048,
-        5),
-        delivery_led_illumination_queue_(delivery_led_illumination_queue),
-    led_pin(led_pin),
-    on_time_ms(on_time_ms),
-    off_time_ms(off_time_ms) {
+      Task("Delivery LED",
+          2048,
+          5),
+          delivery_led_illumination_queue_(delivery_led_illumination_queue),
+      led_pin(led_pin),
+      on_time_ms(on_time_ms),
+      off_time_ms(off_time_ms) {
 }
 
 DeliveryLedTask::~DeliveryLedTask() {

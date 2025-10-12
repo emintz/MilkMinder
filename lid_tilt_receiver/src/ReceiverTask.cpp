@@ -58,8 +58,6 @@ void ReceiverTask::on_esp_now_received(
 }
 
 void ReceiverTask::task_loop() {
-//  MotionNotificationMessage motion_notification_message;
-//  memset(&motion_notification_message, 0, sizeof(motion_notification_message));
   CommunicationEvent event;
   memset(&event, 0, sizeof(event));
   LidPositionReport lid_position_report;
@@ -101,7 +99,6 @@ TaskHandle_t ReceiverTask::start() {
     // TODO: panic
  } else {
     Serial.println("ESP_NOW handler started.");
-
  }
 
   return create_and_start_task();

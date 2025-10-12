@@ -24,7 +24,7 @@
 #include "freertos/timers.h"
 
 class GyroConnectionWatchdogTask : public Task, public Resettable {
-  public:
+public:
   enum State {
     CREATED,
     STARTING,

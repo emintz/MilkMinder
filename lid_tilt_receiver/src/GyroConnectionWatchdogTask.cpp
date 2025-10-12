@@ -16,11 +16,11 @@ static ConnectionStatusMessage CONNECTION_UP = { CONNECTION_STATUS_UP };
 
 GyroConnectionWatchdogTask::EventMessage_t
     GyroConnectionWatchdogTask::EXPIRE_MESSAGE = {
-        GyroConnectionWatchdogTask::EXPIRE,
+      GyroConnectionWatchdogTask::EXPIRE,
 };
 GyroConnectionWatchdogTask::EventMessage_t
     GyroConnectionWatchdogTask::RESET_MESSAGE = {
-        GyroConnectionWatchdogTask::RESET,
+      GyroConnectionWatchdogTask::RESET,
 };
 
 static const GyroConnectionWatchdogTask::State TRANSITION_TABLE
@@ -56,11 +56,11 @@ static const GyroConnectionWatchdogTask::State TRANSITION_TABLE
 
 GyroConnectionWatchdogTask::GyroConnectionWatchdogTask(
     PullQueueHT<ConnectionStatusMessage>& connection_status_queue) :
-        Task(
-            "ESP32 Watchdog",
-            STACK_DEPTH,
-            PRIORITY),
-            connection_status_queue_(connection_status_queue),
+      Task(
+          "ESP32 Watchdog",
+          STACK_DEPTH,
+          PRIORITY),
+          connection_status_queue_(connection_status_queue),
       state(CREATED),
       h_timer(NULL),
       timer_event_queue(10) {

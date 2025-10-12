@@ -8,11 +8,7 @@
 #include "Resettable.h"
 
 Resettable::Resettable() {
-  // TODO Auto-generated constructor stub
-
 }
 
 Resettable::~Resettable() {
-  // TODO Auto-generated destructor stub
 }
-

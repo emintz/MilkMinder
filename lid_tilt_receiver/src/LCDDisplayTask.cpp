@@ -112,6 +112,5 @@ TaskHandle_t LCDDisplayTask::start(/* QueueHandle_t h_display_command */) {
   display.init();
   display.backlight();
   display.setContrast(255);
-//  this->h_display_command_queue = h_display_command;
   return create_and_start_task();
 }

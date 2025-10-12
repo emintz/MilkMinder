@@ -15,69 +15,70 @@ const struct AlarmTask::LevelAndDuration silence_levels[] = {
     { LOW, 60000 },
 };
 const struct AlarmTask::AlarmSignal silent_alarm = {
-    1,
-    silence_levels,
+  1,
+  silence_levels,
 };
 
 
 const struct AlarmTask::LevelAndDuration delivered_levels[] = {
-    { HIGH, 50 },
-    { LOW, 9950 },
+  { HIGH, 50 },
+  { LOW, 9950 },
 };
 const struct AlarmTask::AlarmSignal delivered_alarm = {
-    2,
-    delivered_levels,
+  2,
+  delivered_levels,
 };
 
 
 const struct AlarmTask::LevelAndDuration disconnected_levels[] = {
-    { HIGH, 500 },
-    { LOW, 500 },
-    { HIGH, 500 },
-    { LOW, 500 },
-    { HIGH, 500 },
-    { LOW, 500 },
-    { LOW, 7000 },
+  { HIGH, 500 },
+  { LOW, 500 },
+  { HIGH, 500 },
+  { LOW, 500 },
+  { HIGH, 500 },
+  { LOW, 500 },
+  { LOW, 7000 },
 };
+
 const struct AlarmTask::AlarmSignal disconnected_alarm = {
-    7,
-    disconnected_levels,
+  7,
+  disconnected_levels,
 };
 
 const struct AlarmTask::LevelAndDuration lid_open[] = {
-    { HIGH, 50 },
-    { LOW, 50 },
-    { HIGH, 50 },
-    { LOW, 50 },
-    { HIGH, 50 },
-    { LOW, 1250 },
+  { HIGH, 50 },
+  { LOW, 50 },
+  { HIGH, 50 },
+  { LOW, 50 },
+  { HIGH, 50 },
+  { LOW, 1250 },
 };
 const struct AlarmTask::AlarmSignal lid_open_signal = {
-    6,
-    lid_open,
+  6,
+  lid_open,
 };
 
 const struct AlarmTask::LevelAndDuration panic_alarm[] = {
-    { HIGH, 950 },
-    { LOW, 50 },
+  { HIGH, 950 },
+  { LOW, 50 },
 };
 
 const AlarmTask::AlarmSignal panic_alarm_signal = {
-    2,
-    panic_alarm,
+  2,
+  panic_alarm,
 };
 
 AlarmTask::AlarmTask(
-    uint8_t audio_alert_pin_no,
-    uint8_t led_pin_no,
-    PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue) :
-    Task(
-        "alarm",
-        2048,
-        5),
-    audio_alert_pin_no(audio_alert_pin_no),
-    led_pin_no(led_pin_no),
-    alarm_event_queue_(alarm_event_queue) {
+  uint8_t audio_alert_pin_no,
+  uint8_t led_pin_no,
+  PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue) :
+  Task(
+      "alarm",
+      2048,
+      5),
+  audio_alert_pin_no(audio_alert_pin_no),
+  led_pin_no(led_pin_no),
+  alarm_event_queue_(alarm_event_queue) {
 }
 
 AlarmTask::~AlarmTask() {

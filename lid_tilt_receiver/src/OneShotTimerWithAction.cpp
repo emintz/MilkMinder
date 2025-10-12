@@ -12,40 +12,39 @@
 OneShotTimerWithAction::State OneShotTimerWithAction::TRANSITION_TABLE
     [OST_STATE_NUMBER_OF_STATES][OST_EVENT_NUMBER_OF_EVENTS] =
 {
-    { // EXPIRED state
-      OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_EXPIRE, Expired, do nothing.
-      OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_RESET, Reset, do nothing.
-      OST_STATE_STARTING,  // OST_EVENT_START, Start, start up
-      OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_STOP, Stop, do nothing
-    },
-    {  // RESETTING state
-      OST_STATE_EXPIRED,  // OST_EVENT_EXPIRE, Expired, invoke the action
-      OST_STATE_RESETTING,  // OST_EVENT_RESET, Reset, do the reset.
-      OST_STATE_STARTING,  // OST_EVENT_START, Start, restart the timer
-      OST_STATE_STOPPING,  // OST_EVENT_STOP, Stop, stop the timer.
-    },
-    {  // STARTING state
-      OST_STATE_EXPIRED,  //OST_EVENT_EXPIRE,  Expired, invoke the action
-      OST_STATE_RESETTING,  // OST_EVENT_RESET, Reset, do the reset.
-      OST_STATE_STARTING,  // OST_EVENT_START, Start, restart the timer
-      OST_STATE_STOPPING,  // OST_EVENT_STOP, Stop, stop the timer.
-    },
-    { // STOPPED state
-      OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_EXPIRE, Expired, do nothing
-      OST_STATE_NUMBER_OF_STATES,  // ROST_EVENT_RESET, reset, do nothing -- why we have reset.
-      OST_STATE_STARTING,  // OST_EVENT_START, Start, start the timer.
-      OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_STOP, Stop, do nothing
-    },
-    {  // FAILED state
-      OST_STATE_EXPIRED,  // OST_EVENT_EXPIRE, Expired. Perform action & exit error state
-      OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_RESET, Reset, do nothing
-      OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_START, Start, do nothing
-      OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_STOP, Stop, do nothing
-    },
+  { // EXPIRED state
+    OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_EXPIRE, Expired, do nothing.
+    OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_RESET, Reset, do nothing.
+    OST_STATE_STARTING,  // OST_EVENT_START, Start, start up
+    OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_STOP, Stop, do nothing
+  },
+  {  // RESETTING state
+    OST_STATE_EXPIRED,  // OST_EVENT_EXPIRE, Expired, invoke the action
+    OST_STATE_RESETTING,  // OST_EVENT_RESET, Reset, do the reset.
+    OST_STATE_STARTING,  // OST_EVENT_START, Start, restart the timer
+    OST_STATE_STOPPING,  // OST_EVENT_STOP, Stop, stop the timer.
+  },
+  {  // STARTING state
+    OST_STATE_EXPIRED,  //OST_EVENT_EXPIRE,  Expired, invoke the action
+    OST_STATE_RESETTING,  // OST_EVENT_RESET, Reset, do the reset.
+    OST_STATE_STARTING,  // OST_EVENT_START, Start, restart the timer
+    OST_STATE_STOPPING,  // OST_EVENT_STOP, Stop, stop the timer.
+  },
+  { // STOPPED state
+    OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_EXPIRE, Expired, do nothing
+    OST_STATE_NUMBER_OF_STATES,  // ROST_EVENT_RESET, reset, do nothing -- why we have reset.
+    OST_STATE_STARTING,  // OST_EVENT_START, Start, start the timer.
+    OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_STOP, Stop, do nothing
+  },
+  {  // FAILED state
+    OST_STATE_EXPIRED,  // OST_EVENT_EXPIRE, Expired. Perform action & exit error state
+    OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_RESET, Reset, do nothing
+    OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_START, Start, do nothing
+    OST_STATE_NUMBER_OF_STATES,  // OST_EVENT_STOP, Stop, do nothing
+  },
 };
 
 void OneShotTimerWithAction::timer_callback(TimerHandle_t timer_handle) {
-//  Serial.println("Countown timer expired.");
   ((OneShotTimerWithAction *) pvTimerGetTimerID(timer_handle))->
       on_timer_expired();
 }

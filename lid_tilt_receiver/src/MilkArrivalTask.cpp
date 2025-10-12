@@ -18,14 +18,14 @@
 // specified time, delivery has definitely ended.
 #define CONFIRM_CLOSURE_TIMEOUT_TICKS pdMS_TO_TICKS(5000)
 
-static const AlarmTask::AlarmTaskMessage CONNECTED_ALARM =
-    { AlarmTask::ALARM_EVENT_CONNECTED
+static const AlarmTask::AlarmTaskMessage CONNECTED_ALARM = {
+  AlarmTask::ALARM_EVENT_CONNECTED
 };
 static const AlarmTask::AlarmTaskMessage DELIVERED_ALARM = {
-    AlarmTask::ALARM_EVENT_DELIVERED
+  AlarmTask::ALARM_EVENT_DELIVERED
 };
 static const AlarmTask::AlarmTaskMessage LID_OPEN_ALARM = {
-    AlarmTask::ALARM_EVENT_LID_OPEN
+  AlarmTask::ALARM_EVENT_LID_OPEN
 };
 
 static const LedIlluminationMessage LED_OFF = { DELIVERY_LED_OFF };
