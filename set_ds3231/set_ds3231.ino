@@ -20,8 +20,8 @@ int number_of_times = 0;
 char formatted_digit[4];
 
 void shutdown() {
-        disableCore0WDT();
-        disableCore1WDT();
+  disableCore0WDT();
+  disableCore1WDT();
 }
 
 const char *format_digit(uint8_t digit) {

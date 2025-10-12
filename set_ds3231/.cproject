@@ -14,82 +14,85 @@
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 				<configuration artifactName="${ProjName}" buildProperties="" cleanCommand="rm -f" description="" id="io.sloeber.core.sketch.0" name="Release" parent="io.sloeber.core.configuration.release">
 					<folderInfo id="io.sloeber.core.sketch.0." name="/" resourcePath="">
-						<toolChain id="io.sloeber.core.toolChain.release.905648891" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.1236073868" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
-							<builder buildPath="${workspace_loc:/set_ds3231}/Release" id="io.sloeber.sketch.builder.1641057574" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" parallelBuildOn="false" superClass="io.sloeber.sketch.builder"/>
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.1525214058" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.882738236" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
+						<toolChain id="io.sloeber.core.toolChain.release.1910976886" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.127390944" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
+							<builder buildPath="${workspace_loc:/set_ds3231}/Release" id="io.sloeber.sketch.builder.1233199133" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" parallelBuildOn="false" superClass="io.sloeber.sketch.builder"/>
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.634566315" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.438720609" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/RTClib/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Adafruit_BusIO}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/NTPClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Network/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/SPI/src}&quot;"/>
 								</option>
-								<inputType id="io.sloeber.compiler.cpp.sketch.input.1920953379" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
+								<inputType id="io.sloeber.compiler.cpp.sketch.input.1080414988" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
-							<tool id="io.sloeber.tool.compiler.c.926552047" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.1652370743" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
+							<tool id="io.sloeber.tool.compiler.c.1926243022" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.2014276265" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/RTClib/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Adafruit_BusIO}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/NTPClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Network/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/SPI/src}&quot;"/>
 								</option>
-								<inputType id="io.sloeber.compiler.c.sketch.input.790293180" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
+								<inputType id="io.sloeber.compiler.c.sketch.input.1862766094" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
-							<tool id="io.sloeber.tool.sketch.compiler.s.975718332" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.asm.sketch.option.incpath.1822998009" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
+							<tool id="io.sloeber.tool.sketch.compiler.s.1713855183" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.asm.sketch.option.incpath.639623447" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/RTClib/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Adafruit_BusIO}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/NTPClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/Network/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/set_ds3231/libraries/SPI/src}&quot;"/>
 								</option>
-								<inputType id="io.sloeber.compiler.S.sketch.input.896795410" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
+								<inputType id="io.sloeber.compiler.S.sketch.input.653757512" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
-							<tool id="io.sloeber.tool.ar.670724307" name="Arduino archiver" superClass="io.sloeber.tool.ar"/>
-							<tool id="io.sloeber.tool.combine.1345480460" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
-							<tool id="io.sloeber.tool.objcopy.eep.741603006" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
-							<tool id="io.sloeber.tool.size.682055924" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
+							<tool id="io.sloeber.tool.ar.948413778" name="Arduino archiver" superClass="io.sloeber.tool.ar"/>
+							<tool id="io.sloeber.tool.combine.838391824" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
+							<tool id="io.sloeber.tool.objcopy.eep.1086603148" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
+							<tool id="io.sloeber.tool.size.1272283817" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/**/._*" resourcePath="libraries/**/._*">
-						<toolChain id="io.sloeber.core.toolChain5.264713253" superClass="io.sloeber.core.toolChain5">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/**/._*.1408713170" name=""/>
+						<toolChain id="io.sloeber.core.toolChain5.629864190" superClass="io.sloeber.core.toolChain5">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/**/._*.846624468" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/test*/**" resourcePath="libraries/?*/**/test*/**">
-						<toolChain id="io.sloeber.core.toolChain3.385531606" superClass="io.sloeber.core.toolChain3">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/test*/**.1665786939" name=""/>
+						<toolChain id="io.sloeber.core.toolChain3.1268819850" superClass="io.sloeber.core.toolChain3">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/test*/**.1030229609" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/?xtras/**" resourcePath="libraries/?*/**/?xtras/**">
-						<toolChain id="io.sloeber.core.toolChain2.2103384397" superClass="io.sloeber.core.toolChain2">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xtras/**.778401725" name=""/>
+						<toolChain id="io.sloeber.core.toolChain2.597959378" superClass="io.sloeber.core.toolChain2">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xtras/**.702120495" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/?xamples/**" resourcePath="libraries/?*/**/?xamples/**">
-						<toolChain id="io.sloeber.core.toolChain1.1395340911" superClass="io.sloeber.core.toolChain1">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xamples/**.290906940" name=""/>
+						<toolChain id="io.sloeber.core.toolChain1.1355521669" superClass="io.sloeber.core.toolChain1">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xamples/**.1267425858" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/third-party/**" resourcePath="libraries/?*/**/third-party/**">
-						<toolChain id="io.sloeber.core.toolChain4.1081679375" superClass="io.sloeber.core.toolChain4">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/third-party/**.327825030" name=""/>
+						<toolChain id="io.sloeber.core.toolChain4.1605064771" superClass="io.sloeber.core.toolChain4">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/third-party/**.2100060056" name=""/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/utility/*/*" resourcePath="libraries/?*/utility/*/*">
-						<toolChain id="io.sloeber.core.toolChain6.336759665" superClass="io.sloeber.core.toolChain6">
-							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/utility/*/*.1449724407" name=""/>
+						<toolChain id="io.sloeber.core.toolChain6.798250884" superClass="io.sloeber.core.toolChain6">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/utility/*/*.1746292685" name=""/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
@@ -102,7 +105,7 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="set_ds3231.io.sloeber.core.sketch.309790375" name="Arduino sketch" projectType="io.sloeber.core.sketch"/>
+		<project id="set_ds3231.io.sloeber.core.sketch.411325011" name="Arduino sketch" projectType="io.sloeber.core.sketch"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
