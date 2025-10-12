@@ -12,9 +12,10 @@
 #define RECEIVERTASK_H_
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 
 #include "Resettable.h"
+#include "LidPositionReport.h"
+#include "PullQueueHT.h"
 #include "Task.h"
 #include "TimeTask.h"
 
@@ -29,11 +30,9 @@ class ReceiverTask :
     RCV_LID_POSITION_COUNT,
   };
 
-  QueueHandle_t h_communications_queue;  // Incoming communications events
-  QueueHandle_t h_lid_position_report_queue;  // Delivery events for MilkArrivalTask
-
   const TimeTask *time_task;
   Resettable * watchdog_timer;
+  PullQueueHT<LidPositionReport>& lid_position_report_queue_;
 
   static void on_esp_now_received(
     const esp_now_recv_info* info,
@@ -45,14 +44,13 @@ class ReceiverTask :
 public:
   ReceiverTask(
       TimeTask *time_task,
-      Resettable *watchdog_timer);
-  virtual ~ReceiverTask();
+      Resettable *watchdog_timer,
+      PullQueueHT<LidPositionReport>& lid_position_report_queue);
+  virtual ~ReceiverTask(void);
 
-  static bool begin();
+  static bool begin(void);
 
-  TaskHandle_t start(
-      QueueHandle_t h_communications_queue,
-      QueueHandle_t h_lid_position_report_queue);
+  TaskHandle_t start(void);
 };
 
 #endif /* RECEIVERTASK_H_ */

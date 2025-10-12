@@ -7,9 +7,6 @@
 
 #include "ConnectionStatusTask.h"
 
-#include "ConnectionStatus.h"
-#include "DisplayMessage.h"
-
 const ConnectionStatusTask::State ConnectionStatusTask::TRANSITION_TABLE
     [NET_STATE_COUNT]
     [CONNECTION_STATUS_COUNT] = {
@@ -47,38 +44,29 @@ const ConnectionStatusTask::State ConnectionStatusTask::TRANSITION_TABLE
 
 ConnectionStatusTask::ConnectionStatusTask(
     DisconnectedLedTask *disconnected_led_task,
-    uint8_t connected_led_pin) :
-    state(NET_INITIALIZED),
-    Task("Network status", 2048, 15),
-    h_communication_event_queue(NULL),
-    h_display_command_queue(NULL),
-    disconnected_led_task(disconnected_led_task),
-    connected_led_pin(connected_led_pin) {
-
+    uint8_t connected_led_pin,
+    PullQueueHT<ConnectionStatusMessage>& connection_status_queue,
+    PullQueueHT<DisplayMessage>& display_command_queue) :
+        Task("Network status", 2048, 15),
+        state(NET_INITIALIZED),
+        disconnected_led_task(disconnected_led_task),
+        connected_led_pin(connected_led_pin),
+        connection_status_queue_(connection_status_queue),
+        display_command_queue_(display_command_queue) {
 }
 
 ConnectionStatusTask::~ConnectionStatusTask() {
 }
 
-TaskHandle_t ConnectionStatusTask::start(
-    QueueHandle_t h_communications_event_queue,
-    QueueHandle_t h_display_command_queue) {
-  Serial.print("ConnectionStatusTask::start connection event handle: ");
-  Serial.println((uint32_t) h_communications_event_queue, HEX);
-  this->h_communication_event_queue = h_communications_event_queue;
-  this->h_display_command_queue = h_display_command_queue;
+TaskHandle_t ConnectionStatusTask::start() {
   return create_and_start_task();
 }
 
 void ConnectionStatusTask::task_loop() {
   ConnectionStatusMessage connection_status_message;
   DisplayMessage display_command;
-  State maybe_new_state;
   for (;;) {
-    if (xQueueReceive(
-        h_communication_event_queue,
-        &connection_status_message,
-        portMAX_DELAY)) {
+    if (connection_status_queue_.pull_message(&connection_status_message)) {
       if (connection_status_message.status != CONNECTION_STATUS_COUNT) {
         switch (state =
             TRANSITION_TABLE[state][connection_status_message.status]) {
@@ -89,7 +77,7 @@ void ConnectionStatusTask::task_loop() {
           digitalWrite(connected_led_pin, LOW);
           disconnected_led_task->enable();
           display_command.command = LCD_DISCONNECTED;
-          xQueueSendToBack(h_display_command_queue, &display_command, 0);
+          display_command_queue_.send_message(&display_command, 0);
           Serial.println("WIFI signal lost");
           break;
         case NET_DISCONNECTED:
@@ -99,7 +87,7 @@ void ConnectionStatusTask::task_loop() {
           disconnected_led_task->disable();
           digitalWrite(connected_led_pin, HIGH);
           display_command.command = LCD_CONNECTED;
-          xQueueSendToBack(h_display_command_queue, &display_command, 0);
+          display_command_queue_.send_message(&display_command, 0);
           break;
         case NET_CONNECTED:
           break;
@@ -107,7 +95,7 @@ void ConnectionStatusTask::task_loop() {
           disconnected_led_task->enable();
           digitalWrite(connected_led_pin, LOW);
           display_command.command = LCD_TRANSMITTER_PANIC;
-          xQueueSendToBack(h_display_command_queue, &display_command, 0);
+          display_command_queue_.send_message(&display_command, 0);
           break;
         default:
           Serial.println("Default in connection status task.");

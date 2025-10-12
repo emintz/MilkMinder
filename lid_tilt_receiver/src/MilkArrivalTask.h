@@ -13,14 +13,15 @@
 #include "Arduino.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
 
 #include "Action.h"
-
+#include "AlarmTask.h"
+#include "DeliveryLEDIlluminationStatus.h"
 #include "LidPositionReport.h"
 #include "MilkArrivalAction.h"
 #include "OneShotTimerWithAction.h"
+#include "PullQueueHT.h"
 #include "Task.h"
 #include "TimeTask.h"
 
@@ -43,11 +44,12 @@ class MilkArrivalTask : public Task {
       [LidPositionReport::LID_POS_NUMBER_OF_VALUES];
 
   TimeTask *time_task;
+  PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue_;
+  PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue_;
+  PullQueueHT<DisplayMessage>& display_command_queue_;
+  PullQueueHT<LidPositionReport>& lid_position_report_queue_;
 
   QueueHandle_t h_lid_position_report_queue;
-  QueueHandle_t h_delivery_led_illumination_queue;
-  QueueHandle_t h_alarm_event_queue;
-  QueueHandle_t h_display_command_queue;
   ArrivalState state;
   MilkArrivalAction timeout_action;
   OneShotTimerWithAction timer;
@@ -64,14 +66,15 @@ class MilkArrivalTask : public Task {
       LidPositionReport::PositionValue notification_on_expiration);
 
 public:
-  MilkArrivalTask(TimeTask * time_task);
+  MilkArrivalTask(
+      TimeTask * time_task,
+      PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue,
+      PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
+      PullQueueHT<DisplayMessage>& display_command_queue,
+      PullQueueHT<LidPositionReport>& lid_position_report_queue);
   virtual ~MilkArrivalTask();
 
-  TaskHandle_t start(
-      QueueHandle_t h_lid_position_report_queue,
-      QueueHandle_t h_delivery_led_illumination_queue,
-      QueueHandle_t h_alarm_event_queue,
-      QueueHandle_t h_display_command_queue);
+  TaskHandle_t start();
   virtual void task_loop();
 };
 

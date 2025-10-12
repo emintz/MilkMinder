@@ -7,11 +7,6 @@
 
 #include "MilkArrivalTask.h"
 
-#include "LidPositionReport.h"
-
-#include "AlarmTask.h"
-#include "DeliveryLEDIlluminationStatus.h"
-#include "DisplayMessage.h"
 #include "PinAssignments.h"
 #include "WhiteLedPin.h"
 
@@ -98,34 +93,33 @@ MilkArrivalTask::ArrivalState MilkArrivalTask::STATE_TRANSITION_TABLE
        },
     };
 
-MilkArrivalTask::MilkArrivalTask(TimeTask *time_task) :
-  Task(
-      "Milk Arrival",
-      2048,
-      9),
-  time_task(time_task),
-  h_lid_position_report_queue(NULL),
-  h_delivery_led_illumination_queue(NULL),
-  h_alarm_event_queue(NULL),
-  h_display_command_queue(NULL),
-  state(ArrivalState::MILK_ARRIVAL_CRREATED),
-  timeout_action(),
-  timer("Milk Arrival Timer", &timeout_action) {
+MilkArrivalTask::MilkArrivalTask(
+    TimeTask *time_task,
+    PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue,
+    PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
+    PullQueueHT<DisplayMessage>& display_command_queue,
+    PullQueueHT<LidPositionReport>& lid_position_report_queue) :
+      Task(
+          "Milk Arrival",
+          2048,
+          9),
+      time_task(time_task),
+      alarm_event_queue_(alarm_event_queue),
+      delivery_led_illumination_queue_(delivery_led_illumination_queue),
+      display_command_queue_(display_command_queue),
+      lid_position_report_queue_(lid_position_report_queue),
+      h_lid_position_report_queue(NULL),
+      state(ArrivalState::MILK_ARRIVAL_CRREATED),
+      timeout_action(lid_position_report_queue),
+      timer("Milk Arrival Timer", &timeout_action) {
 }
 
-MilkArrivalTask::~MilkArrivalTask() {
+MilkArrivalTask::~MilkArrivalTask(void) {
 }
 
-TaskHandle_t MilkArrivalTask::start(
-    QueueHandle_t h_lid_position_report_queue,
-    QueueHandle_t h_delivery_led_illumination_queue,
-    QueueHandle_t h_alarm_event_queue,
-    QueueHandle_t h_display_command_queue) {
+TaskHandle_t MilkArrivalTask::start(void) {
   this-> h_lid_position_report_queue = h_lid_position_report_queue;
-  this->h_delivery_led_illumination_queue = h_delivery_led_illumination_queue;
-  this->h_alarm_event_queue = h_alarm_event_queue;
-  this->h_display_command_queue = h_display_command_queue;
-  timeout_action.begin(h_lid_position_report_queue);
+  timeout_action.begin(/* h_lid_position_report_queue */);
 
   return create_and_start_task();
 };
@@ -136,13 +130,13 @@ void MilkArrivalTask::halt_countdown() {
 }
 
 void MilkArrivalTask::lid_is_open() {
-  xQueueSendToBack(h_delivery_led_illumination_queue, &LED_BLINK, 0);
-  xQueueSendToBack(h_alarm_event_queue, &LID_OPEN_ALARM, 0);
+  delivery_led_illumination_queue_.send_message(&LED_BLINK, 0);
+  alarm_event_queue_.send_message(&LID_OPEN_ALARM, 0);
 }
 
 void MilkArrivalTask::quiesce() {
-  xQueueSendToBack(h_delivery_led_illumination_queue, &LED_OFF, 0);
-  xQueueSendToBack(h_alarm_event_queue, &CONNECTED_ALARM, 0);
+  delivery_led_illumination_queue_.send_message(&LED_OFF, 0);
+  alarm_event_queue_.send_message(&CONNECTED_ALARM, 0);
 }
 
 void MilkArrivalTask::start_countdown(
@@ -159,8 +153,7 @@ void MilkArrivalTask::task_loop() {
   uint8_t led_level = LOW;
   Serial.println("Milk arrival task started.");
   for (;;) {
-    if (xQueueReceive(
-        h_lid_position_report_queue, &position_report, portMAX_DELAY)) {
+    if (lid_position_report_queue_.pull_message(&position_report)) {
       ArrivalState maybe_new_state =
           STATE_TRANSITION_TABLE[state][position_report.lid_position];
       if (maybe_new_state != MILK_ARRIVAL_NUMBER_OF_STATES) {
@@ -183,7 +176,7 @@ void MilkArrivalTask::task_loop() {
           led_level = HIGH;
           lid_is_open();
           display_message.command = LCD_DELIVERY_IN_PROGRESS;
-          xQueueSendToBack(h_display_command_queue, &display_message, 0);
+          display_command_queue_.send_message(&display_message, 0);
           break;
         case ArrivalState::MILK_ARRIVAL_SUSPECT_DELIVERY_IS_COMPLETE:
           start_countdown(
@@ -192,10 +185,10 @@ void MilkArrivalTask::task_loop() {
           break;
         case ArrivalState::MILK_ARRIVAL_CONFIRMED_DELIVERY_IS_COMPLETE:
           time_task->start_stopwatch();
-          xQueueSendToBack(h_delivery_led_illumination_queue, &LED_ON, 0);
-          xQueueSendToBack(h_alarm_event_queue, &DELIVERED_ALARM, 0);
+          delivery_led_illumination_queue_.send_message(&LED_ON, 0);
+          alarm_event_queue_.send_message(&DELIVERED_ALARM, 0);
           display_message.command = LCD_DELIVERED;
-          xQueueSendToBack(h_display_command_queue, &display_message, 0);
+          display_command_queue_.send_message(&display_message, 0);
           break;
         case ArrivalState::MILK_ARRIVAL_SUSPECT_TAMPERING:
           led_level = HIGH;
@@ -207,7 +200,7 @@ void MilkArrivalTask::task_loop() {
           led_level = HIGH;
           lid_is_open();
           display_message.command = LCD_TAMPER_ALERT;
-          xQueueSendToBack(h_display_command_queue, &display_message, 0);
+          display_command_queue_.send_message(&display_message, 0);
           break;
         case ArrivalState::MILK_ARRIVAL_NUMBER_OF_STATES:
           break;

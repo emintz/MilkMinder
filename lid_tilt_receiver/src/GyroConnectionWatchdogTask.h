@@ -14,11 +14,12 @@
 #define GYROCONNECTIONWATCHDOGTASK_H_
 
 #include "Arduino.h"
+#include "ConnectionStatus.h"
+#include "PullQueueHT.h"
 #include "Resettable.h"
 #include "Task.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
 #include "freertos/timers.h"
 
@@ -45,10 +46,10 @@ private:
     Event event;
   } EventMessage_t;
 
+  PullQueueHT<ConnectionStatusMessage>& connection_status_queue_;
   State state;
   TimerHandle_t h_timer;
-  QueueHandle_t h_connection_status_queue;
-  QueueHandle_t h_timer_event_queue;
+  PullQueueHT<EventMessage_t> timer_event_queue;
 
   static EventMessage_t EXPIRE_MESSAGE;
   static EventMessage_t RESET_MESSAGE;
@@ -56,14 +57,15 @@ private:
   static void on_timer_expired(TimerHandle_t h_timer);
 
 public:
-  GyroConnectionWatchdogTask();
+  GyroConnectionWatchdogTask(
+      PullQueueHT<ConnectionStatusMessage>& connection_status_queue);
   virtual ~GyroConnectionWatchdogTask();
 
   void expire(void);
 
   virtual void reset(void);
 
-  TaskHandle_t start(QueueHandle_t h_communications_event_queue);
+  TaskHandle_t start(/* QueueHandle_t h_communications_event_queue */);
 
   virtual void task_loop(void);
 };

@@ -11,19 +11,19 @@
 #define LCDDISPLAYTASK_H_
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
 
+#include "DisplayMessage.h"
 #include "LiquidCrystal_I2C.h"
+#include "PullQueueHT.h"
 #include "Task.h"
 #include "TimeTask.h"
 
 
-class LCDDisplayTask :
-    public Task {
+class LCDDisplayTask : public Task {
   LiquidCrystal_I2C& display;
-  QueueHandle_t h_display_command_queue;
   TimeTask *time_task;
+  PullQueueHT<DisplayMessage>& display_command_queue_;
 
   /**
    * Display "Network Connected" status
@@ -44,25 +44,23 @@ public:
   /**
    * Constructor
    *
-   * Parameters     Contents
-   * -------------- -------------------------------------
-   * display        Low level display instance
-   * time_task      Timer task, provides delivery time
+   * Parameters            Contents
+   * --------------------- -------------------------------------
+   * display               Low level display instance
+   * time_task             Timer task, provides delivery time
+   * display_command_queue Provides the commands that drive the
+   *                       display
    */
   LCDDisplayTask(
       LiquidCrystal_I2C& display,
-      TimeTask *time_task);
+      TimeTask *time_task,
+      PullQueueHT<DisplayMessage>& display_command_queue);
   virtual ~LCDDisplayTask();
 
   /**
-   *
-   *
-   * Parameters         Contents
-   * -----------------  -------------------------------------
-   * h_display_command  LCD command queue. The queue carries
-   *                    commands to write information to the LCD.
+   * Starts the display task.
    */
-  TaskHandle_t start(QueueHandle_t h_display_command);
+  TaskHandle_t start();
 };
 
 #endif /* LCDDISPLAYTASK_H_ */

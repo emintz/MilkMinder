@@ -9,19 +9,19 @@
 
 #include <stdlib.h>
 
-#include "DisplayMessage.h"
 #include "TimeTask.h"
 
 LCDDisplayTask::LCDDisplayTask(
-	LiquidCrystal_I2C& display,
-	TimeTask *time_task) :
-		Task(
-				"LCD Display",
-				4096,
-				3),
-		display(display),
-		h_display_command_queue(NULL),
-		time_task(time_task) {
+    LiquidCrystal_I2C& display,
+    TimeTask *time_task,
+    PullQueueHT<DisplayMessage>& display_command_queue) :
+      Task(
+            "LCD Display",
+            4096,
+            3),
+      display(display),
+      time_task(time_task),
+      display_command_queue_(display_command_queue) {
 }
 
 LCDDisplayTask::~LCDDisplayTask() {
@@ -41,8 +41,8 @@ void LCDDisplayTask::task_loop() {
   DisplayMessage command_message;
   for (;;) {
     memset(&command_message, 0, sizeof(command_message));
-    if (xQueueReceive(
-        h_display_command_queue, &command_message, portMAX_DELAY) == pdTRUE) {
+    if (
+        display_command_queue_.pull_message(&command_message)) {
       switch (command_message.command) {
         case LCD_CLEAR:
           display.clear();
@@ -108,10 +108,10 @@ void LCDDisplayTask::task_loop() {
   }
 }
 
-TaskHandle_t LCDDisplayTask::start(QueueHandle_t h_display_command) {
+TaskHandle_t LCDDisplayTask::start(/* QueueHandle_t h_display_command */) {
   display.init();
   display.backlight();
   display.setContrast(255);
-  this->h_display_command_queue = h_display_command;
+//  this->h_display_command_queue = h_display_command;
   return create_and_start_task();
 }

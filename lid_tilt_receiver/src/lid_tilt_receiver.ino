@@ -48,12 +48,6 @@
 #define LCD_ROWS 2
 #define LCD_COLUMNS 16
 
-static QueueHandle_t h_alarm_event_queue;
-static QueueHandle_t h_communications_event_queue;
-static QueueHandle_t h_delivery_led_illumination_queue;
-static QueueHandle_t h_display_command_queue;
-static QueueHandle_t h_lid_position_report_queue;
-
 static TaskHandle_t h_connection_status_task;
 static TaskHandle_t h_disconnected_led_task;
 static TaskHandle_t h_lcd_display_task;
@@ -68,20 +62,26 @@ static Timezone usEastern(usEDT, usEST);
 
 // Event queues
 static PullQueueHT<AlarmTask::AlarmTaskMessage> alarm_event_queue(3);
-static PullQueueHT<CommunicationEvent> communications_event_queue(3);
+static PullQueueHT<ConnectionStatusMessage> connection_status_queue(3);
 static PullQueueHT<LedIlluminationMessage> delivery_led_illumination_queue(3);
 static PullQueueHT<DisplayMessage> display_command_queue(3);
 static PullQueueHT<LidPositionReport> lid_position_report_queue(3);
 
-static AlarmTask alarm_task(ALARM_PIN, YELLOW_LED_PIN);
+static AlarmTask alarm_task(ALARM_PIN, YELLOW_LED_PIN, alarm_event_queue);
 
 static RTC_DS3231 time_keeper;
-static TimeTask time_task(&time_keeper, &usEastern);
+static TimeTask time_task(&time_keeper, &usEastern, display_command_queue);
 
-static MilkArrivalTask milk_arrival_task(&time_task);
+static MilkArrivalTask milk_arrival_task(
+    &time_task,
+    alarm_event_queue,
+    delivery_led_illumination_queue,
+    display_command_queue,
+    lid_position_report_queue);
 
 static LiquidCrystal_I2C display(I2C_LCD_ADDRESS, LCD_COLUMNS, LCD_ROWS);
-static LCDDisplayTask display_task(display, &time_task);
+static LCDDisplayTask display_task(
+    display, &time_task, display_command_queue);
 
 static const uint8_t led_pins[] =
 	{RED_LED_PIN, YELLOW_LED_PIN, GREEN_LED_PIN, BLUE_LED_PIN};
@@ -89,15 +89,24 @@ static const uint8_t led_pins[] =
 
 static RippleTask ripple_task(led_pins, NUMBER_OF_LED_PINS, 100);
 
-static GyroConnectionWatchdogTask gyro_connection_watchdog;
+static GyroConnectionWatchdogTask gyro_connection_watchdog(
+    connection_status_queue);
 
-static ReceiverTask receiver_task(&time_task, &gyro_connection_watchdog);
+static ReceiverTask receiver_task(
+    &time_task,
+    &gyro_connection_watchdog,
+    lid_position_report_queue);
 
-static DeliveryLedTask delivery_led_task(BLUE_LED_PIN, 100, 100);
+static DeliveryLedTask delivery_led_task(
+    delivery_led_illumination_queue, BLUE_LED_PIN, 100, 100);
 
-static DisconnectedLedTask disconnected_led_task(RED_LED_PIN);
+static DisconnectedLedTask disconnected_led_task(
+    RED_LED_PIN);
 static ConnectionStatusTask connection_status_task(
-    &disconnected_led_task, GREEN_LED_PIN);
+    &disconnected_led_task,
+    GREEN_LED_PIN,
+    connection_status_queue,
+    display_command_queue);
 
 /**
  * Receives notification of lid tilt, which indicates that milk has been
@@ -117,21 +126,16 @@ void setup() {
   digitalWrite(BUILTIN_LED_PIN, LOW);
 
   alarm_event_queue.begin();
-  h_alarm_event_queue = alarm_event_queue.handle();
-  communications_event_queue.begin();
-  h_communications_event_queue = communications_event_queue.handle();
+  connection_status_queue.begin();
   delivery_led_illumination_queue.begin();
-  h_delivery_led_illumination_queue = delivery_led_illumination_queue.handle();
   display_command_queue.begin();
-  h_display_command_queue = display_command_queue.handle();
   lid_position_report_queue.begin();
-  h_lid_position_report_queue = lid_position_report_queue.handle();
 
-  h_lcd_display_task = display_task.start(h_display_command_queue);
+  h_lcd_display_task = display_task.start();
   DisplayMessage display_message;
   memset(&display_message, 0, sizeof(display_message));
   display_message.command = LCD_INIT;
-  xQueueSendToBack(h_display_command_queue, &display_message, 0);
+  display_command_queue.send_message(&display_message, 0);
   memset(&display_message, 0, sizeof(display_message));
 
   display_message.command = LCD_DISCONNECTED;
@@ -176,20 +180,17 @@ void setup() {
   digitalWrite(WHITE_LED_PIN, LOW);
 
   h_delivery_led_illumination_task =
-      delivery_led_task.start(h_delivery_led_illumination_queue);
+      delivery_led_task.start();
 
-  h_disconnected_led_task = disconnected_led_task.start(h_alarm_event_queue);
+  h_disconnected_led_task = disconnected_led_task.start();
 
-  h_connection_status_task = connection_status_task.start(
-      h_communications_event_queue,
-      h_display_command_queue);
+  h_connection_status_task = connection_status_task.start();
 
-  alarm_task.start(h_alarm_event_queue);
+  alarm_task.start();
 
-  // watchdog_timer.start(h_communications_event_queue);
-  gyro_connection_watchdog.start(h_communications_event_queue);
+  gyro_connection_watchdog.start();
   Serial.println("Watchdog timer started.");
-  h_time_task = time_task.start(h_display_command_queue, GPIO_NUM_17);
+  h_time_task = time_task.start(GPIO_NUM_17);
 
   timeval tv;
   tv.tv_sec = time_keeper.now().unixtime();
@@ -200,19 +201,13 @@ void setup() {
 
   ReceiverTask::begin();
 
-  h_milk_arrival_task = milk_arrival_task.start(
-      h_lid_position_report_queue,
-      h_delivery_led_illumination_queue,
-      h_alarm_event_queue,
-      h_display_command_queue);
+  h_milk_arrival_task = milk_arrival_task.start();
 
-  receiver_task.start(
-      h_communications_event_queue,
-      h_lid_position_report_queue);
+  receiver_task.start();
   Serial.println("Receiver task started.");
   memset(&display_message, 0, sizeof(display_message));
   display_message.command = LCD_RUN;
-  xQueueSendToBack(h_display_command_queue, &display_message, 0);
+  display_command_queue.send_message(&display_message, 0);
 }
 
 void loop() {

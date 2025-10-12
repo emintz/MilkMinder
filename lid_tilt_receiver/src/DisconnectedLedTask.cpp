@@ -10,7 +10,6 @@
 DisconnectedLedTask::DisconnectedLedTask(
   uint8_t led_pin) :
     Task("Disconnect Blink", 2048, 5),
-    h_alarm_event_queue(NULL),
     h_task(NULL),
     led_pin(led_pin) {
 }
@@ -27,8 +26,7 @@ void DisconnectedLedTask::enable() {
   vTaskResume(h_task);
 }
 
-TaskHandle_t DisconnectedLedTask::start(QueueHandle_t h_alarm_event_queue) {
-  this->h_alarm_event_queue = h_alarm_event_queue;
+TaskHandle_t DisconnectedLedTask::start() {
   return h_task = create_and_start_task();
 }
 

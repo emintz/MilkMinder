@@ -10,6 +10,7 @@
 #ifndef ALARMTASK_H_
 #define ALARMTASK_H_
 
+#include "PullQueueHT.h"
 #include "Task.h"
 
 class AlarmTask :
@@ -50,9 +51,9 @@ public:
     const LevelAndDuration *level;
   };
 private:
-  QueueHandle_t h_alarm_event_queue;
   const uint8_t audio_alert_pin_no;
   const uint8_t led_pin_no;
+  PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue_;
 
   /**
    * Emits the specified alarm until a user requests another.
@@ -76,24 +77,20 @@ public:
    * ------------------  ------------------------------------------------------
    * audio_alert_pin_no  The GPIO pin that is connected to the alarm beeper.
    * led_pin_no          The GPIO pin that is connected to the alarm LED.
+   * alarm_event_queue   Pull queue carrying the inbound alarm events which
+   *                     this class processes
    */
   AlarmTask(
       uint8_t audio_alert_pin_no,
-      uint8_t led_pin_no);
+      uint8_t led_pin_no,
+      PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue);
 
   virtual ~AlarmTask();
 
   /**
    * Starts the alarm task.
-   *
-   * Parameters:
-   *
-   * Name                Contents
-   * ------------------- ------------------------------------------------------
-   * h_alarm_event_queue The queue that provides alarm request messages.
-   *                     Client tasks enqueue
    */
-  TaskHandle_t start(QueueHandle_t h_alarm_event_queue);
+  TaskHandle_t start();
 };
 
 #endif /* ALARMTASK_H_ */

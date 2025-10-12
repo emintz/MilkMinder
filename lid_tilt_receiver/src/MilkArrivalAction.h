@@ -12,36 +12,27 @@
 #define MILKARRIVALACTION_H_
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 
 #include "MutexH.h"
 
 #include "Action.h"
-
 #include "LidPositionReport.h"
+#include "PullQueueHT.h"
 
 class MilkArrivalAction : public Action {
-
-  QueueHandle_t h_lid_position_report_queue;
+  PullQueueHT<LidPositionReport>& lid_position_report_queue_;
   LidPositionReport::PositionValue timeout_report;
   MutexH mutex_;
 
 public:
-  MilkArrivalAction();
+  MilkArrivalAction(PullQueueHT<LidPositionReport>& lid_position_report_queue);
   virtual ~MilkArrivalAction();
 
   /**
    * Initialize the action. Be sure to invoke this method before the
    * action runs. Note that this method is NOT thread safe.
-   *
-   * Parameters
-   *
-   * Name                          Description
-   * ----------------------------- --------------------------------------------
-   *  h_lid_position_report_queue  Queue that transmits timeout signals. Must
-   *                               be a valid queue handle and cannot be NULL.
    */
-  void begin(QueueHandle_t h_lid_position_report_queue);
+  void begin();
 
   /**
    * Runs the action, which enqueues the currently configured lid position

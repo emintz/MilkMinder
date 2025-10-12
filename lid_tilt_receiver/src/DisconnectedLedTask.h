@@ -13,23 +13,20 @@
 #include "Arduino.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
 
 #include "Task.h"
 
 class DisconnectedLedTask :
   public Task {
-  QueueHandle_t h_alarm_event_queue;
   TaskHandle_t h_task;
   const uint8_t led_pin;
 
 public:
-  DisconnectedLedTask(
-      uint8_t led_pin);
+  DisconnectedLedTask(uint8_t led_pin);
   virtual ~DisconnectedLedTask();
 
-  TaskHandle_t start(QueueHandle_t h_alarm_event_queue);
+  TaskHandle_t start(void);
 
   /**
    * Disables (suspends) the task and turns off the delivery LED.

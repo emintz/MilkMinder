@@ -69,24 +69,25 @@ const AlarmTask::AlarmSignal panic_alarm_signal = {
 
 AlarmTask::AlarmTask(
     uint8_t audio_alert_pin_no,
-    uint8_t led_pin_no) :
+    uint8_t led_pin_no,
+    PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue) :
     Task(
         "alarm",
         2048,
         5),
-    h_alarm_event_queue(NULL),
     audio_alert_pin_no(audio_alert_pin_no),
-    led_pin_no(led_pin_no) {
+    led_pin_no(led_pin_no),
+    alarm_event_queue_(alarm_event_queue) {
 }
 
 AlarmTask::~AlarmTask() {
 }
 
 void AlarmTask::emit_alarm(const AlarmSignal &alarm_signal) {
-  while (!uxQueueMessagesWaiting(h_alarm_event_queue)) {
+  while (!alarm_event_queue_.waiting_message_count()) {
     for (
         size_t i = 0;
-        !uxQueueMessagesWaiting(h_alarm_event_queue)
+        !alarm_event_queue_.waiting_message_count()
             && i < alarm_signal.level_count;
         ++i) {
       const LevelAndDuration *level_and_duration = alarm_signal.level + i;
@@ -101,7 +102,7 @@ void AlarmTask::task_loop() {
   AlarmTaskMessage message;
   for (;;) {
     memset(&message, 0, sizeof(message));
-    if (xQueueReceive(h_alarm_event_queue, &message, portMAX_DELAY) ) {
+    if (alarm_event_queue_.pull_message(&message)) {
       switch (message.event) {
       case ALARM_EVENT_CONNECTED:
         emit_alarm(silent_alarm);
@@ -123,7 +124,6 @@ void AlarmTask::task_loop() {
   }
 }
 
-TaskHandle_t AlarmTask::start(QueueHandle_t h_alarm_event_queue) {
-  this->h_alarm_event_queue = h_alarm_event_queue;
+TaskHandle_t AlarmTask::start() {
   return create_and_start_task();
 }

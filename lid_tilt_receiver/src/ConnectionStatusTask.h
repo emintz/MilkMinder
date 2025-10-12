@@ -13,11 +13,14 @@
 #include "Arduino.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
 #include "freertos/task.h"
 
+#include "CommunicationEvent.h"
 #include "ConnectionStatus.h"
+#include "ConnectionStatusTask.h"
 #include "DisconnectedLedTask.h"
+#include "DisplayMessage.h"
+#include "PullQueueHT.h"
 #include "Task.h"
 
 /**
@@ -51,20 +54,20 @@ class ConnectionStatusTask :
   static const State TRANSITION_TABLE[NET_STATE_COUNT][CONNECTION_STATUS_COUNT];
 
   State state;  // Machine state
-  QueueHandle_t h_communication_event_queue;  // Provides incoming events
-  QueueHandle_t h_display_command_queue;  // Outgoing display-related commands
   DisconnectedLedTask *disconnected_led_task;  // Blinks the disconnected LED
   uint8_t connected_led_pin;
+  PullQueueHT<ConnectionStatusMessage>& connection_status_queue_;
+  PullQueueHT<DisplayMessage>& display_command_queue_;
 
 public:
   ConnectionStatusTask(
       DisconnectedLedTask *disconnected_led_task,
-      uint8_t connected_led_pin);
+      uint8_t connected_led_pin,
+      PullQueueHT<ConnectionStatusMessage>& communications_event_queue,
+      PullQueueHT<DisplayMessage>& display_command_queue);
   virtual ~ConnectionStatusTask();
 
-  TaskHandle_t start(
-    QueueHandle_t h_connection_status_queue,
-    QueueHandle_t h_display_message_queue);
+  TaskHandle_t start();
 
   virtual void task_loop();
 };

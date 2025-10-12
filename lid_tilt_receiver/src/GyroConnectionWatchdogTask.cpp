@@ -7,7 +7,6 @@
 
 #include "GyroConnectionWatchdogTask.h"
 
-#include "ConnectionStatus.h"
 
 static ConnectionStatusMessage CONNECTION_DOWN = { CONNECTION_STATUS_DOWN };
 static ConnectionStatusMessage CONNECTION_UP = { CONNECTION_STATUS_UP };
@@ -55,15 +54,16 @@ static const GyroConnectionWatchdogTask::State TRANSITION_TABLE
   };
 
 
-GyroConnectionWatchdogTask::GyroConnectionWatchdogTask() :
+GyroConnectionWatchdogTask::GyroConnectionWatchdogTask(
+    PullQueueHT<ConnectionStatusMessage>& connection_status_queue) :
         Task(
             "ESP32 Watchdog",
             STACK_DEPTH,
             PRIORITY),
+            connection_status_queue_(connection_status_queue),
       state(CREATED),
       h_timer(NULL),
-      h_connection_status_queue(NULL),
-      h_timer_event_queue(NULL) {
+      timer_event_queue(10) {
 }
 
 GyroConnectionWatchdogTask::~GyroConnectionWatchdogTask(void) {
@@ -75,17 +75,15 @@ void GyroConnectionWatchdogTask::on_timer_expired(TimerHandle_t h_timer) {
 }
 
 void GyroConnectionWatchdogTask::expire(void) {
-  xQueueSendToBack(h_timer_event_queue, &EXPIRE_MESSAGE, 0);
+  timer_event_queue.send_message(&EXPIRE_MESSAGE, 0);
 }
 
 void GyroConnectionWatchdogTask::reset(void) {
-  xQueueSendToBack(h_timer_event_queue, &RESET_MESSAGE, 0);
+  timer_event_queue.send_message(&RESET_MESSAGE, 0);
 }
 
-TaskHandle_t GyroConnectionWatchdogTask::start(
-    QueueHandle_t h_communications_event_queue) {
-  this->h_connection_status_queue = h_communications_event_queue;
-  h_timer_event_queue = xQueueCreate(sizeof(EventMessage_t), 10);
+TaskHandle_t GyroConnectionWatchdogTask::start(void) {
+  timer_event_queue.begin();
   h_timer = xTimerCreate(
       "Gyro Disconnect",
       1510,
@@ -101,39 +99,32 @@ void GyroConnectionWatchdogTask::task_loop(void) {
   EventMessage_t event_message;
   for (;;) {
     if (
-        xQueueReceive(h_timer_event_queue, &event_message, portMAX_DELAY)
-            == pdPASS
-        && event_message.event != GYRO_WATCHDOG_NUMBER_OF_STATES) {
+        timer_event_queue.pull_message(&event_message)
+        && event_message.event != Event::GYRO_WATCHDOG_NUMBER_OF_EVENTS) {
       state = TRANSITION_TABLE[state][event_message.event];
       switch (state) {
         case CREATED:
           // Assume connection down until shown otherwise.
-          xQueueSendToBack(
-              h_connection_status_queue,
-              &CONNECTION_DOWN,
-              0);
+          connection_status_queue_.send_message(&CONNECTION_DOWN, 0);
           break;
         case STARTING:
           xTimerStart(h_timer, 0);
           break;
         case RESETTING:
           xTimerReset(h_timer, 0);
-          xQueueSendToBack(
-              h_connection_status_queue,
-              &CONNECTION_UP,
-              pdMS_TO_TICKS(10));
+          connection_status_queue_.send_message(&CONNECTION_UP, 0);
           break;
         case HAS_RESET:
           xTimerReset(h_timer, 0);
           break;
         case EXPIRING:
-          xQueueSendToBack(
-              h_connection_status_queue,
-              &CONNECTION_DOWN,
-              0);
+          connection_status_queue_.send_message(&CONNECTION_DOWN, 0);
           break;
         case HAS_EXPIRED:
           // Nothing to do
+          break;
+        case GYRO_WATCHDOG_NUMBER_OF_STATES:
+          // Cannot happen
           break;
       }
     }

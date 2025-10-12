@@ -19,8 +19,9 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/queue.h"
 
+#include "DisplayMessage.h"
+#include "PullQueueHT.h"
 #include "Timezone.h"
 
 class RTC_DS3231;
@@ -38,7 +39,7 @@ class TimeTask {
 
   RTC_DS3231 *time_keeper;
   Timezone *time_zone;
-  QueueHandle_t h_lcd_display;
+  PullQueueHT<DisplayMessage>& display_command_queue_;
   gpio_isr_handle_t h_gpio_isr;
   IsrParams isr_params;
   State stopwatch_state;
@@ -66,7 +67,8 @@ class TimeTask {
 public:
   TimeTask(
       RTC_DS3231 *time_keeper,
-      Timezone *time_zone);
+      Timezone *time_zone,
+      PullQueueHT<DisplayMessage>& display_command_queue);
   virtual ~TimeTask();
 
   time_t now();
@@ -74,7 +76,6 @@ public:
   void reset_stopwatch();
 
   TaskHandle_t start(
-      QueueHandle_t h_lcd_display,
       gpio_num_t interrupt_pin);
 
   void start_stopwatch();

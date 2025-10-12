@@ -13,7 +13,6 @@
 
 #include "RTClib.h"
 
-#include "DisplayMessage.h"
 
 char * TimeTask::to_two_chars(uint8_t value, char *string) {
   *string++ = '0' + value/10;
@@ -32,13 +31,14 @@ void IRAM_ATTR TimeTask::second_tick_handler(void *params) {
 
 TimeTask::TimeTask(
     RTC_DS3231 *time_keeper,
-    Timezone *time_zone) :
-  time_keeper(time_keeper),
-  time_zone(time_zone),
-  h_lcd_display(NULL),
-  h_gpio_isr(NULL),
-  stopwatch_state(STOPPED),
-  elapsed_time_seconds(0) {
+    Timezone *time_zone,
+    PullQueueHT<DisplayMessage>& display_command_queue) :
+      time_keeper(time_keeper),
+      time_zone(time_zone),
+      display_command_queue_(display_command_queue),
+      h_gpio_isr(NULL),
+      stopwatch_state(STOPPED),
+      elapsed_time_seconds(0) {
   memset(&isr_params, 0, sizeof(isr_params));
 
 }
@@ -72,8 +72,7 @@ void TimeTask::run() {
     buffer = to_two_chars(broken_down_time.tm_min, buffer);
     *buffer++ = ':';
     to_two_chars(broken_down_time.tm_sec, buffer);
-    xQueueSendToBack(h_lcd_display, &message, pdMS_TO_TICKS(1));
-
+    display_command_queue_.send_message(&message, pdMS_TO_TICKS(1));
     switch (stopwatch_state) {
     case STOPPED:
       break;
@@ -83,7 +82,7 @@ void TimeTask::run() {
         memset(&message, 0, sizeof(message));
         message.command = LCD_ELAPSED;
         itoa(elapsed_time_seconds/60, message.text, DEC);
-        xQueueSendToBack(h_lcd_display, &message, pdMS_TO_TICKS(1));
+        display_command_queue_.send_message(&message, pdMS_TO_TICKS(1));
       }
       break;
     }
@@ -96,9 +95,8 @@ void TimeTask::reset_stopwatch() {
 }
 
 TaskHandle_t TimeTask::start(
-    QueueHandle_t h_lcd_display,
     gpio_num_t interrupt_pin) {
-  this->h_lcd_display = h_lcd_display;
+  Serial.println("Starting the timer task.");
   bool status = time_keeper->begin();
   if (status) {
     time_keeper->writeSqwPinMode(Ds3231SqwPinMode::DS3231_SquareWave1Hz);
@@ -120,6 +118,7 @@ TaskHandle_t TimeTask::start(
   } else {
     Serial.println("Time keeper failed to start.");
   }
+  Serial.println("Returning from time keeper startup");
   return isr_params.h_time_task;
 }
 
