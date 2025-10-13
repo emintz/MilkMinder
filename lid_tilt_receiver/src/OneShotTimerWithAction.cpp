@@ -7,8 +7,6 @@
 
 #include "OneShotTimerWithAction.h"
 
-#include <string.h>
-
 OneShotTimerWithAction::State OneShotTimerWithAction::TRANSITION_TABLE
     [OST_STATE_NUMBER_OF_STATES][OST_EVENT_NUMBER_OF_EVENTS] =
 {
