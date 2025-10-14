@@ -4,7 +4,17 @@
  *  Created on: Apr 4, 2023
  *      Author: Eric Mintz
  *
- * Task that tracks milk arrival.
+ * Task that tracks and processes milk arrival data.
+ *
+ * This is the heart of the system, a dispatcher that receives
+ * lid position events from the lid position report queue, processes
+ * them, and dispatches events to subsystem management tasks.
+ * Messages arrive from the ESP-Now receiver and commands
+ * are sent to:
+ *
+ *   1. The LCD driver that manages the 16 x 2 status display
+ *   2. LED driver that manages the 5 status LEDs
+ *   3. The alarm task that flashes an LED and sounds a tone.
  */
 
 #ifndef MILKARRIVALTASK_H_
@@ -15,12 +25,11 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "Action.h"
 #include "AlarmTask.h"
 #include "DeliveryLEDIlluminationStatus.h"
+#include "EventTimeout.h"
 #include "LidPositionReport.h"
-#include "MilkArrivalAction.h"
-#include "OneShotTimerWithAction.h"
+#include "OneShotTimerH.h"
 #include "PullQueueHT.h"
 #include "Task.h"
 #include "TimeTask.h"
@@ -49,14 +58,21 @@ class MilkArrivalTask : public Task {
   PullQueueHT<DisplayMessage>& display_command_queue_;
   PullQueueHT<LidPositionReport>& lid_position_report_queue_;
 
-  QueueHandle_t h_lid_position_report_queue;
-  ArrivalState state;
-  MilkArrivalAction timeout_action;
-  OneShotTimerWithAction timer;
+  QueueHandle_t h_lid_position_report_queue_;
+  ArrivalState state_;
+  EventTimeout on_timeout_;
+  OneShotTimerH event_timer_;
 
-
+  /**
+   * Stops the countdown and resets the enqueued message to
+   * "lid has not moved"
+   */
   void halt_countdown(void);
 
+  /**
+   * Enqueues a "lid is open" message and starts the transmission
+   * countdown.
+   */
   void lid_is_open(void);
 
   void quiesce(void);
@@ -74,8 +90,9 @@ public:
       PullQueueHT<LidPositionReport>& lid_position_report_queue);
   virtual ~MilkArrivalTask();
 
-  TaskHandle_t start();
-  virtual void task_loop();
+  TaskHandle_t start(void);
+
+  virtual void task_loop(void);
 };
 
 #endif /* MILKARRIVALTASK_H_ */

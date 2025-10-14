@@ -108,25 +108,27 @@ MilkArrivalTask::MilkArrivalTask(
       delivery_led_illumination_queue_(delivery_led_illumination_queue),
       display_command_queue_(display_command_queue),
       lid_position_report_queue_(lid_position_report_queue),
-      h_lid_position_report_queue(NULL),
-      state(ArrivalState::MILK_ARRIVAL_CRREATED),
-      timeout_action(lid_position_report_queue),
-      timer("Milk Arrival Timer", &timeout_action) {
+      h_lid_position_report_queue_(NULL),
+      state_(ArrivalState::MILK_ARRIVAL_CRREATED),
+      on_timeout_(lid_position_report_queue),
+      event_timer_(
+          "ArrivalTimer",
+          on_timeout_){
 }
 
 MilkArrivalTask::~MilkArrivalTask(void) {
 }
 
 TaskHandle_t MilkArrivalTask::start(void) {
-  this-> h_lid_position_report_queue = h_lid_position_report_queue;
-  timeout_action.begin(/* h_lid_position_report_queue */);
-
+  this-> h_lid_position_report_queue_ = h_lid_position_report_queue_;
+  on_timeout_.begin();
+  event_timer_.begin();
   return create_and_start_task();
 };
 
 void MilkArrivalTask::halt_countdown() {
-  timeout_action.set_timeout_report(LidPositionReport::LID_POS_UNCHANGED);
-  timer.stop();
+  on_timeout_.set_timeout_report(LidPositionReport::LID_POS_UNCHANGED);
+  event_timer_.stop();
 }
 
 void MilkArrivalTask::lid_is_open() {
@@ -143,8 +145,10 @@ void MilkArrivalTask::start_countdown(
     TickType_t timeout,
     LidPositionReport::PositionValue notification_on_expiration) {
   halt_countdown();
-  timeout_action.set_timeout_report(notification_on_expiration);
-  timer.start(timeout);
+//  old_timeout_action_.set_timeout_report(notification_on_expiration);
+//  old_timer_.start(timeout);
+  on_timeout_.set_timeout_report(notification_on_expiration);
+  event_timer_.start_ticks(timeout);
 }
 
 void MilkArrivalTask::task_loop() {
@@ -155,10 +159,10 @@ void MilkArrivalTask::task_loop() {
   for (;;) {
     if (lid_position_report_queue_.pull_message(&position_report)) {
       ArrivalState maybe_new_state =
-          STATE_TRANSITION_TABLE[state][position_report.lid_position];
+          STATE_TRANSITION_TABLE[state_][position_report.lid_position];
       if (maybe_new_state != MILK_ARRIVAL_NUMBER_OF_STATES) {
         led_level = LOW;
-        switch (state = maybe_new_state) {
+        switch (state_ = maybe_new_state) {
         case ArrivalState::MILK_ARRIVAL_CRREATED:
           // For the sake of completeness, as there are no transitions
           // into this state.

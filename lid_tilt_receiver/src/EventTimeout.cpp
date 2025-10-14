@@ -1,38 +1,35 @@
 /*
- * MilkArrivalAction.cpp
+ * EventTimeout.cpp
  *
- *  Created on: Apr 4, 2023
+ *  Created on: Oct 13, 2025
  *      Author: Eric Mintz
  */
 
-#include "MilkArrivalAction.h"
+#include "EventTimeout.h"
 
-#include "string.h"
+#include "MutexH.h"
 
-#include "MutexLock.h"
-
-MilkArrivalAction::MilkArrivalAction(
+EventTimeout::EventTimeout(
     PullQueueHT<LidPositionReport>& lid_position_report_queue) :
-      Action(),
       lid_position_report_queue_(lid_position_report_queue),
       timeout_report(LidPositionReport::LID_POS_UNCHANGED) {
 }
 
-MilkArrivalAction::~MilkArrivalAction() {
+EventTimeout::~EventTimeout() {
 }
 
-void MilkArrivalAction::begin() {
-  mutex_.begin();
-}
-
-void MilkArrivalAction::run() {
+void EventTimeout::apply(void) {
   LidPositionReport report;
   report.lid_position = timeout_report;
   MutexLock lock(mutex_);
   lid_position_report_queue_.send_message(&report, pdMS_TO_TICKS(10));
 }
 
-void MilkArrivalAction::set_timeout_report(
+bool EventTimeout::begin(void) {
+  return mutex_.begin();
+}
+
+void EventTimeout::set_timeout_report(
     LidPositionReport::PositionValue timeout_report) {
   MutexLock lock(mutex_);
   this->timeout_report = timeout_report;
