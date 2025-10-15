@@ -2,7 +2,6 @@
  * Milk minder receiver.
  *
  *      Author: Eric Mintz
- *
  */
 #include "Arduino.h"
 
@@ -26,18 +25,21 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include "BlinkAction.h"
+#include "TaskWithActionH.h"
+
 #include "AlarmTask.h"
 #include "CommunicationEvent.h"
 #include "ConnectionStatusTask.h"
 #include "DeliveryLEDIlluminationStatus.h"
 #include "DeliveryLedTask.h"
-#include "DisconnectedLedTask.h"
 #include "DisplayMessage.h"
 #include "GyroConnectionWatchdogTask.h"
 #include "LidPositionReport.h"
 #include "LCDDisplayTask.h"
 #include "MilkArrivalTask.h"
 #include "PinAssignments.h"
+#include "Priorities.h"
 #include "ReceiverTask.h"
 #include "RippleTask.h"
 #include "TimeTask.h"
@@ -49,7 +51,6 @@
 #define LCD_COLUMNS 16
 
 static TaskHandle_t h_connection_status_task;
-static TaskHandle_t h_disconnected_led_task;
 static TaskHandle_t h_lcd_display_task;
 static TaskHandle_t h_delivery_led_illumination_task;
 static TaskHandle_t h_milk_arrival_task;
@@ -100,10 +101,15 @@ static ReceiverTask receiver_task(
 static DeliveryLedTask delivery_led_task(
     delivery_led_illumination_queue, BLUE_LED_PIN, 100, 100);
 
-static DisconnectedLedTask disconnected_led_task(
-    RED_LED_PIN);
+static BlinkAction blink_red_action(RED_LED_PIN, 1, 100, 100, 1);
+static TaskWithActionH blink_red_task(
+    "Red Blink",
+    RED_BLINK_PRIORITY,
+    &blink_red_action,
+    2048);
+
 static ConnectionStatusTask connection_status_task(
-    &disconnected_led_task,
+    blink_red_action,
     GREEN_LED_PIN,
     connection_status_queue,
     display_command_queue);
@@ -182,8 +188,10 @@ void setup() {
   h_delivery_led_illumination_task =
       delivery_led_task.start();
 
-  h_disconnected_led_task = disconnected_led_task.start();
+//  h_disconnected_led_task = disconnected_led_task.start();
 
+  blink_red_task.start();
+  blink_red_action.blink_off();
   h_connection_status_task = connection_status_task.start();
 
   alarm_task.start();

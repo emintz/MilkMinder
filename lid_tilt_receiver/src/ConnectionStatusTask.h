@@ -15,10 +15,11 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "BlinkAction.h"
+
 #include "CommunicationEvent.h"
 #include "ConnectionStatus.h"
 #include "ConnectionStatusTask.h"
-#include "DisconnectedLedTask.h"
 #include "DisplayMessage.h"
 #include "PullQueueHT.h"
 #include "Task.h"
@@ -54,14 +55,14 @@ class ConnectionStatusTask :
   static const State TRANSITION_TABLE[NET_STATE_COUNT][CONNECTION_STATUS_COUNT];
 
   State state;  // Machine state
-  DisconnectedLedTask *disconnected_led_task;  // Blinks the disconnected LED
-  uint8_t connected_led_pin;
+  BlinkAction& disconnected_led_action_;
+  uint8_t connected_led_pin_;
   PullQueueHT<ConnectionStatusMessage>& connection_status_queue_;
   PullQueueHT<DisplayMessage>& display_command_queue_;
 
 public:
   ConnectionStatusTask(
-      DisconnectedLedTask *disconnected_led_task,
+      BlinkAction& disconnected_led_action,
       uint8_t connected_led_pin,
       PullQueueHT<ConnectionStatusMessage>& communications_event_queue,
       PullQueueHT<DisplayMessage>& display_command_queue);
