@@ -20,11 +20,9 @@ static PullQueueHT<CommunicationEvent> the_motion_notification_queue(3);
 static uint8_t builtin_pin_state = LOW;
 
 ReceiverTask::ReceiverTask(
-    TimeTask *time_task,
     Resettable *watchdog_timer,
     PullQueueHT<LidPositionReport>& lid_position_report_queue) :
       Task("Receiver", 2048, 4),
-      time_task(time_task),
       watchdog_timer(watchdog_timer),
       lid_position_report_queue_(lid_position_report_queue) {
 }

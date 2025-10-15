@@ -17,7 +17,6 @@
 #include "LidPositionReport.h"
 #include "PullQueueHT.h"
 #include "Task.h"
-#include "TimeTask.h"
 
 #include <esp_now.h>
 
@@ -30,7 +29,6 @@ class ReceiverTask :
     RCV_LID_POSITION_COUNT,
   };
 
-  const TimeTask *time_task;
   Resettable * watchdog_timer;
   PullQueueHT<LidPositionReport>& lid_position_report_queue_;
 
@@ -43,7 +41,6 @@ class ReceiverTask :
 
 public:
   ReceiverTask(
-      TimeTask *time_task,
       Resettable *watchdog_timer,
       PullQueueHT<LidPositionReport>& lid_position_report_queue);
   virtual ~ReceiverTask(void);

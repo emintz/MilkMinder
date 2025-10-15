@@ -94,7 +94,7 @@ static GyroConnectionWatchdogTask gyro_connection_watchdog(
     connection_status_queue);
 
 static ReceiverTask receiver_task(
-    &time_task,
+//    &time_task,
     &gyro_connection_watchdog,
     lid_position_report_queue);
 
