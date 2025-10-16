@@ -19,7 +19,6 @@
 #include "BlinkAction.h"
 #include "PullQueueHT.h"
 #include "TaskAction.h"
-#include "Task.h"
 
 #include "CommunicationEvent.h"
 #include "ConnectionStatus.h"
