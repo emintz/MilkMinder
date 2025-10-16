@@ -4,36 +4,21 @@
  *  Created on: Feb 15, 2023
  *      Author: Eric Mintz
  *
- * Task that manages the alarm, a.k.a. the beeper
+ * Task that manages the alarm, a.k.a. the beeper, and a specified LED.
+ * Note that the LED illuminates when the beeper sounds.
  */
 
-#ifndef ALARMTASK_H_
-#define ALARMTASK_H_
+#ifndef ALARMACTION_H_
+#define ALARMACTION_H_
 
 #include "PullQueueHT.h"
-#include "Task.h"
 
-class AlarmTask :
-    public Task {
+#include "TaskAction.h"
+#include "AlarmMessage.h"
+
+
+class AlarmAction : public TaskAction {
 public:
-  /**
-   * Types of available signal.
-   */
-  enum Event {
-    ALARM_EVENT_CONNECTED,
-    ALARM_EVENT_DELIVERED,
-    ALARM_EVENT_DISCONNECTED,
-    ALARM_EVENT_LID_OPEN,
-    ALARM_EVENT_TRANSMITTER_PANIC,
-  };
-  /**
-   * Message used to transmit commands. When the alarm task receives a
-   * message, it emits the specified signal.
-   */
-  struct AlarmTaskMessage {
-    Event event;
-  };
-
   /**
    * A component of a signal, a pin level (HIGH or LOW) and the length of
    * time to maintain it.
@@ -53,19 +38,12 @@ public:
 private:
   const uint8_t audio_alert_pin_no;
   const uint8_t led_pin_no;
-  PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue_;
+  PullQueueHT<AlarmMessage>& alarm_event_queue_;
 
   /**
    * Emits the specified alarm until a user requests another.
    */
   void emit_alarm(const AlarmSignal &alarm_signal);
-
-  /**
-   * The task loop, which listens for incoming alarm messages and emits
-   * the requested alarms by publishing AlarmTaskMessage instance to the
-   * queue.
-   */
-  void task_loop();
 
 public:
   /**
@@ -80,17 +58,19 @@ public:
    * alarm_event_queue   Pull queue carrying the inbound alarm events which
    *                     this class processes
    */
-  AlarmTask(
+  AlarmAction(
       uint8_t audio_alert_pin_no,
       uint8_t led_pin_no,
-      PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue);
+      PullQueueHT<AlarmMessage>& alarm_event_queue);
 
-  virtual ~AlarmTask();
+  virtual ~AlarmAction();
 
   /**
-   * Starts the alarm task.
+   * The task loop, which listens for incoming alarm messages and emits
+   * the requested alarms by publishing AlarmTaskMessage instance to the
+   * queue.
    */
-  TaskHandle_t start();
+  virtual void run() override;
 };
 
-#endif /* ALARMTASK_H_ */
+#endif /* ALARMACTION_H_ */

@@ -3,6 +3,8 @@
  *
  *      Author: Eric Mintz
  */
+#include <src/AlarmAction.h>
+
 #include "Arduino.h"
 
 #include "driver/gpio.h"
@@ -28,7 +30,8 @@
 #include "BlinkAction.h"
 #include "TaskWithActionH.h"
 
-#include "AlarmTask.h"
+#include "AlarmAction.h"
+#include "AlarmMessage.h"
 #include "CommunicationEvent.h"
 #include "ConnectionStatusTask.h"
 #include "DeliveryLEDIlluminationStatus.h"
@@ -62,13 +65,18 @@ static TimeChangeRule usEST = {"EST", First, Sun, Nov, 2, -300};   //UTC - 5 hou
 static Timezone usEastern(usEDT, usEST);
 
 // Event queues
-static PullQueueHT<AlarmTask::AlarmTaskMessage> alarm_event_queue(3);
+static PullQueueHT<AlarmMessage> alarm_event_queue(3);
 static PullQueueHT<ConnectionStatusMessage> connection_status_queue(3);
 static PullQueueHT<LedIlluminationMessage> delivery_led_illumination_queue(3);
 static PullQueueHT<DisplayMessage> display_command_queue(3);
 static PullQueueHT<LidPositionReport> lid_position_report_queue(3);
 
-static AlarmTask alarm_task(ALARM_PIN, YELLOW_LED_PIN, alarm_event_queue);
+static AlarmAction alarm_action(ALARM_PIN, YELLOW_LED_PIN, alarm_event_queue);
+static TaskWithActionH alarm_task(
+    "Alarm",
+    ALARM_PRIORITY,
+    &alarm_action,
+    4096);
 
 static RTC_DS3231 time_keeper;
 static TimeTask time_task(&time_keeper, &usEastern, display_command_queue);
@@ -120,6 +128,17 @@ static ConnectionStatusTask connection_status_task(
  */
 void setup() {
   gpio_install_isr_service(0);
+  digitalWrite(WHITE_LED_PIN, HIGH);
+  ripple_task.start();
+  ripple_task.resume();
+  Serial.begin(115200);
+  Serial.print("Milk minder receiver compiled on ");
+  Serial.print(__DATE__);
+  Serial.print(" at ");
+  Serial.println(__TIME__);
+  Serial.print("Clock frequency is: ");
+  Serial.println(rtc_clk_apb_freq_get());
+  Serial.println("Test receiver is booting.");
 
   pinMode(BUILTIN_LED_PIN, OUTPUT);
   pinMode(RED_LED_PIN, OUTPUT);
@@ -146,18 +165,6 @@ void setup() {
 
   display_message.command = LCD_DISCONNECTED;
   display_command_queue.send_message(&display_message);
-
-  digitalWrite(WHITE_LED_PIN, HIGH);
-  ripple_task.start();
-  ripple_task.resume();
-  Serial.begin(115200);
-  Serial.print("Milk minder receiver compiled on ");
-  Serial.print(__DATE__);
-  Serial.print(" at ");
-  Serial.println(__TIME__);
-  Serial.print("Clock frequency is: ");
-  Serial.println(rtc_clk_apb_freq_get());
-  Serial.println("Test receiver is booting.");
 
   Wire.begin();
 
@@ -187,8 +194,6 @@ void setup() {
 
   h_delivery_led_illumination_task =
       delivery_led_task.start();
-
-//  h_disconnected_led_task = disconnected_led_task.start();
 
   blink_red_task.start();
   blink_red_action.blink_off();

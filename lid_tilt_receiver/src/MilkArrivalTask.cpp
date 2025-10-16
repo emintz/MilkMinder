@@ -18,14 +18,14 @@
 // specified time, delivery has definitely ended.
 #define CONFIRM_CLOSURE_TIMEOUT_TICKS pdMS_TO_TICKS(5000)
 
-static const AlarmTask::AlarmTaskMessage CONNECTED_ALARM = {
-  AlarmTask::ALARM_EVENT_CONNECTED
+static const AlarmMessage CONNECTED_ALARM = {
+  AlarmEvent::ALARM_EVENT_CONNECTED
 };
-static const AlarmTask::AlarmTaskMessage DELIVERED_ALARM = {
-  AlarmTask::ALARM_EVENT_DELIVERED
+static const AlarmMessage DELIVERED_ALARM = {
+  AlarmEvent::ALARM_EVENT_DELIVERED
 };
-static const AlarmTask::AlarmTaskMessage LID_OPEN_ALARM = {
-  AlarmTask::ALARM_EVENT_LID_OPEN
+static const AlarmMessage LID_OPEN_ALARM = {
+  AlarmEvent::ALARM_EVENT_LID_OPEN
 };
 
 static const LedIlluminationMessage LED_OFF = { DELIVERY_LED_OFF };
@@ -95,7 +95,7 @@ MilkArrivalTask::ArrivalState MilkArrivalTask::STATE_TRANSITION_TABLE
 
 MilkArrivalTask::MilkArrivalTask(
     TimeTask *time_task,
-    PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue,
+    PullQueueHT<AlarmMessage>& alarm_event_queue,
     PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
     PullQueueHT<DisplayMessage>& display_command_queue,
     PullQueueHT<LidPositionReport>& lid_position_report_queue) :
@@ -145,8 +145,6 @@ void MilkArrivalTask::start_countdown(
     TickType_t timeout,
     LidPositionReport::PositionValue notification_on_expiration) {
   halt_countdown();
-//  old_timeout_action_.set_timeout_report(notification_on_expiration);
-//  old_timer_.start(timeout);
   on_timeout_.set_timeout_report(notification_on_expiration);
   event_timer_.start_ticks(timeout);
 }

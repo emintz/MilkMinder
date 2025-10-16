@@ -20,12 +20,13 @@
 #ifndef MILKARRIVALTASK_H_
 #define MILKARRIVALTASK_H_
 
+#include <src/AlarmAction.h>
+
 #include "Arduino.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "AlarmTask.h"
 #include "DeliveryLEDIlluminationStatus.h"
 #include "EventTimeout.h"
 #include "LidPositionReport.h"
@@ -53,7 +54,7 @@ class MilkArrivalTask : public Task {
       [LidPositionReport::LID_POS_NUMBER_OF_VALUES];
 
   TimeTask *time_task;
-  PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue_;
+  PullQueueHT<AlarmMessage>& alarm_event_queue_;
   PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue_;
   PullQueueHT<DisplayMessage>& display_command_queue_;
   PullQueueHT<LidPositionReport>& lid_position_report_queue_;
@@ -84,7 +85,7 @@ class MilkArrivalTask : public Task {
 public:
   MilkArrivalTask(
       TimeTask * time_task,
-      PullQueueHT<AlarmTask::AlarmTaskMessage>& alarm_event_queue,
+      PullQueueHT<AlarmMessage>& alarm_event_queue,
       PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
       PullQueueHT<DisplayMessage>& display_command_queue,
       PullQueueHT<LidPositionReport>& lid_position_report_queue);

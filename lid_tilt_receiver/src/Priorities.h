@@ -10,8 +10,7 @@
 #ifndef PRIORITIES_H_
 #define PRIORITIES_H_
 
+#define ALARM_PRIORITY 10
 #define RED_BLINK_PRIORITY 5
-
-
 
 #endif /* PRIORITIES_H_ */
