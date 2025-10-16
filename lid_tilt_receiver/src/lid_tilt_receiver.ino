@@ -37,12 +37,12 @@
 #include "EspNowStatusAction.h"
 #include "GyroConnectionWatchdogTask.h"
 #include "LidPositionReport.h"
-#include "LCDDisplayTask.h"
-#include "MilkArrivalTask.h"
+#include "MilkArrivalAction.h"
 #include "PinAssignments.h"
 #include "Priorities.h"
 #include "ReceiverTask.h"
 #include "RippleTask.h"
+#include "StatusDisplayAction.h"
 #include "TimeTask.h"
 #include "Timezone.h"
 #include "WhiteLedPin.h"
@@ -51,9 +51,8 @@
 #define LCD_ROWS 2
 #define LCD_COLUMNS 16
 
-static TaskHandle_t h_lcd_display_task;
 static TaskHandle_t h_delivery_led_illumination_task;
-static TaskHandle_t h_milk_arrival_task;
+//static TaskHandle_t h_milk_arrival_task;
 static TaskHandle_t h_time_task;
 
 // TODO: store the timezone in eeprom.
@@ -78,16 +77,26 @@ static TaskWithActionH alarm_task(
 static RTC_DS3231 time_keeper;
 static TimeTask time_task(&time_keeper, &usEastern, display_command_queue);
 
-static MilkArrivalTask milk_arrival_task(
+static MilkArrivalAction milk_arrival_action(
     &time_task,
     alarm_event_queue,
     delivery_led_illumination_queue,
     display_command_queue,
     lid_position_report_queue);
+static TaskWithActionH milk_arrival_task(
+    "Arrival",
+    ARRIVAL_PRIORITY,
+    &milk_arrival_action,
+    4096);
 
 static LiquidCrystal_I2C display(I2C_LCD_ADDRESS, LCD_COLUMNS, LCD_ROWS);
-static LCDDisplayTask display_task(
+static StatusDisplayAction status_display_action(
     display, &time_task, display_command_queue);
+static TaskWithActionH status_display_task(
+    "Status Display",
+    STATUS_DISPLAY_PRIORITY,
+    &status_display_action,
+    4096);
 
 static const uint8_t led_pins[] =
 	{RED_LED_PIN, YELLOW_LED_PIN, GREEN_LED_PIN, BLUE_LED_PIN};
@@ -99,7 +108,6 @@ static GyroConnectionWatchdogTask gyro_connection_watchdog(
     connection_status_queue);
 
 static ReceiverTask receiver_task(
-//    &time_task,
     &gyro_connection_watchdog,
     lid_position_report_queue);
 
@@ -158,7 +166,7 @@ void setup() {
   display_command_queue.begin();
   lid_position_report_queue.begin();
 
-  h_lcd_display_task = display_task.start();
+  status_display_task.start();
   DisplayMessage display_message;
   memset(&display_message, 0, sizeof(display_message));
   display_message.command = LCD_INIT;
@@ -216,7 +224,8 @@ void setup() {
 
   ReceiverTask::begin();
 
-  h_milk_arrival_task = milk_arrival_task.start();
+//  h_milk_arrival_task =
+  milk_arrival_task.start();
 
   receiver_task.start();
   Serial.println("Receiver task started.");

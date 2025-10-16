@@ -1,10 +1,10 @@
 /*
- * MilkArrivalTask.h
+ * MilkArrivalAction.h
  *
  *  Created on: Apr 4, 2023
  *      Author: Eric Mintz
  *
- * Task that tracks and processes milk arrival data.
+ * Task action that tracks and processes milk arrival data.
  *
  * This is the heart of the system, a dispatcher that receives
  * lid position events from the lid position report queue, processes
@@ -32,10 +32,10 @@
 #include "LidPositionReport.h"
 #include "OneShotTimerH.h"
 #include "PullQueueHT.h"
-#include "Task.h"
+#include "TaskAction.h"
 #include "TimeTask.h"
 
-class MilkArrivalTask : public Task {
+class MilkArrivalAction : public TaskAction {
 
   enum ArrivalState {
     MILK_ARRIVAL_CRREATED,  // Creation state
@@ -59,7 +59,6 @@ class MilkArrivalTask : public Task {
   PullQueueHT<DisplayMessage>& display_command_queue_;
   PullQueueHT<LidPositionReport>& lid_position_report_queue_;
 
-  QueueHandle_t h_lid_position_report_queue_;
   ArrivalState state_;
   EventTimeout on_timeout_;
   OneShotTimerH event_timer_;
@@ -83,17 +82,17 @@ class MilkArrivalTask : public Task {
       LidPositionReport::PositionValue notification_on_expiration);
 
 public:
-  MilkArrivalTask(
+  MilkArrivalAction(
       TimeTask * time_task,
       PullQueueHT<AlarmMessage>& alarm_event_queue,
       PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
       PullQueueHT<DisplayMessage>& display_command_queue,
       PullQueueHT<LidPositionReport>& lid_position_report_queue);
-  virtual ~MilkArrivalTask();
+  virtual ~MilkArrivalAction();
 
-  TaskHandle_t start(void);
+//  TaskHandle_t start(void);
 
-  virtual void task_loop(void);
+  virtual void run(void) override;
 };
 
 #endif /* MILKARRIVALTASK_H_ */

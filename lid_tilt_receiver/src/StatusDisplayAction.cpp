@@ -1,0 +1,110 @@
+/*
+ * EspNowDisplayTask.cpp
+ *
+ *  Created on: Feb 9, 2023
+ *      Author: Eric Mintz
+ */
+
+#include "StatusDisplayAction.h"
+
+#include <stdlib.h>
+
+#include "TimeTask.h"
+
+StatusDisplayAction::StatusDisplayAction(
+    LiquidCrystal_I2C& display,
+    TimeTask *time_task,
+    PullQueueHT<DisplayMessage>& display_command_queue) :
+      display_(display),
+      time_task_(time_task),
+      display_command_queue_(display_command_queue) {
+}
+
+StatusDisplayAction::~StatusDisplayAction() {
+}
+
+void StatusDisplayAction::connected() {
+  display_.setCursor(0, 1);
+  display_.print("OK ");
+}
+
+void StatusDisplayAction::disconnected() {
+  display_.setCursor(0, 1);
+  display_.print("NET");
+}
+
+void StatusDisplayAction::run() {
+  DisplayMessage command_message;
+
+  display_.init();
+  display_.backlight();
+  display_.setContrast(255);
+
+  for (;;) {
+    memset(&command_message, 0, sizeof(command_message));
+    if (
+        display_command_queue_.pull_message(&command_message)) {
+      switch (command_message.command) {
+        case LCD_CLEAR:
+          display_.clear();
+          display_.setCursor(0, 0);
+          break;
+        case LCD_CONNECTED:
+          connected();
+          break;
+        case LCD_DELIVERED:
+          display_.setCursor(0, 0);
+          display_.print("Delivered       ");
+          connected();
+          {
+            char formatted_time[6];
+            memset(formatted_time, 0, sizeof(formatted_time));
+            tm broken_down_time;
+            memset(&broken_down_time, 0, sizeof(broken_down_time));
+            time_t current_time = time_task_->now();
+            gmtime_r(&current_time, &broken_down_time);
+            char * buffer =
+                time_task_->to_two_chars(broken_down_time.tm_hour, formatted_time);
+            *buffer++ = ':';
+            buffer = time_task_->to_two_chars(broken_down_time.tm_min, buffer);
+            display_.setCursor(16 - strlen(formatted_time), 0);
+            display_.print(formatted_time);
+          }
+          break;
+        case LCD_DISCONNECTED:
+          disconnected();
+          break;
+        case LCD_ELAPSED:
+          display_.setCursor(4, 1);
+          display_.print(command_message.text);
+          break;
+        case LCD_INIT:
+          display_.setCursor(0, 0);
+          display_.print("Starting        ");
+          break;
+        case LCD_NOOP:
+          break;
+        case LCD_RUN:
+          display_.setCursor(0, 0);
+          display_.print("Listening       ");
+          break;
+        case LCD_TIME_OF_DAY:
+          display_.setCursor(MAX_LCD_TEXT_LENGTH-strlen(command_message.text), 1);
+          display_.print(command_message.text);
+          break;
+        case LCD_TRANSMITTER_PANIC:
+          display_.setCursor(0, 0);
+          display_.print("XMIT FAIL       ");
+          break;
+        case LCD_TAMPER_ALERT:
+          display_.setCursor(0, 0);
+          display_.print("Tamper Alert    ");
+          break;
+        case LCD_DELIVERY_IN_PROGRESS:
+          display_.setCursor(0, 0);
+          display_.print("Milk Arriving   ");
+          break;
+      }
+    }
+  }
+}

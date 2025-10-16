@@ -1,11 +1,11 @@
 /*
- * MilkArrivalTask.cpp
+ * MilkArrivalAction.cpp
  *
  *  Created on: Apr 4, 2023
  *      Author: Eric Mintz
  */
 
-#include "MilkArrivalTask.h"
+#include "MilkArrivalAction.h"
 
 #include "PinAssignments.h"
 #include "WhiteLedPin.h"
@@ -32,8 +32,8 @@ static const LedIlluminationMessage LED_OFF = { DELIVERY_LED_OFF };
 static const LedIlluminationMessage LED_BLINK = { DELIVERY_LED_BLINK };
 static const LedIlluminationMessage LED_ON = { DELIVERY_LED_ON };
 
-MilkArrivalTask::ArrivalState MilkArrivalTask::STATE_TRANSITION_TABLE
-    [MilkArrivalTask::MILK_ARRIVAL_NUMBER_OF_STATES]
+MilkArrivalAction::ArrivalState MilkArrivalAction::STATE_TRANSITION_TABLE
+    [MilkArrivalAction::MILK_ARRIVAL_NUMBER_OF_STATES]
     [LidPositionReport::LID_POS_NUMBER_OF_VALUES] = {
       { // MILK_ARRIVAL_CRREATED
         MILK_ARRIVAL_NUMBER_OF_STATES,   // LID_POS_UNCHANGED
@@ -93,55 +93,43 @@ MilkArrivalTask::ArrivalState MilkArrivalTask::STATE_TRANSITION_TABLE
        },
     };
 
-MilkArrivalTask::MilkArrivalTask(
-    TimeTask *time_task,
-    PullQueueHT<AlarmMessage>& alarm_event_queue,
-    PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
-    PullQueueHT<DisplayMessage>& display_command_queue,
-    PullQueueHT<LidPositionReport>& lid_position_report_queue) :
-      Task(
-          "Milk Arrival",
-          2048,
-          9),
-      time_task(time_task),
-      alarm_event_queue_(alarm_event_queue),
-      delivery_led_illumination_queue_(delivery_led_illumination_queue),
-      display_command_queue_(display_command_queue),
-      lid_position_report_queue_(lid_position_report_queue),
-      h_lid_position_report_queue_(NULL),
+MilkArrivalAction::MilkArrivalAction(
+    TimeTask *time_task_,
+    PullQueueHT<AlarmMessage>& alarm_event_queue_,
+    PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue_,
+    PullQueueHT<DisplayMessage>& display_command_queue_,
+    PullQueueHT<LidPositionReport>& lid_position_report_queue_) :
+      time_task(time_task_),
+      alarm_event_queue_(alarm_event_queue_),
+      delivery_led_illumination_queue_(delivery_led_illumination_queue_),
+      display_command_queue_(display_command_queue_),
+      lid_position_report_queue_(lid_position_report_queue_),
       state_(ArrivalState::MILK_ARRIVAL_CRREATED),
-      on_timeout_(lid_position_report_queue),
+      on_timeout_(lid_position_report_queue_),
       event_timer_(
           "ArrivalTimer",
           on_timeout_){
 }
 
-MilkArrivalTask::~MilkArrivalTask(void) {
+MilkArrivalAction::~MilkArrivalAction(void) {
 }
 
-TaskHandle_t MilkArrivalTask::start(void) {
-  this-> h_lid_position_report_queue_ = h_lid_position_report_queue_;
-  on_timeout_.begin();
-  event_timer_.begin();
-  return create_and_start_task();
-};
-
-void MilkArrivalTask::halt_countdown() {
+void MilkArrivalAction::halt_countdown() {
   on_timeout_.set_timeout_report(LidPositionReport::LID_POS_UNCHANGED);
   event_timer_.stop();
 }
 
-void MilkArrivalTask::lid_is_open() {
+void MilkArrivalAction::lid_is_open() {
   delivery_led_illumination_queue_.send_message(&LED_BLINK, 0);
   alarm_event_queue_.send_message(&LID_OPEN_ALARM, 0);
 }
 
-void MilkArrivalTask::quiesce() {
+void MilkArrivalAction::quiesce() {
   delivery_led_illumination_queue_.send_message(&LED_OFF, 0);
   alarm_event_queue_.send_message(&CONNECTED_ALARM, 0);
 }
 
-void MilkArrivalTask::start_countdown(
+void MilkArrivalAction::start_countdown(
     TickType_t timeout,
     LidPositionReport::PositionValue notification_on_expiration) {
   halt_countdown();
@@ -149,10 +137,12 @@ void MilkArrivalTask::start_countdown(
   event_timer_.start_ticks(timeout);
 }
 
-void MilkArrivalTask::task_loop() {
+void MilkArrivalAction::run() {
   LidPositionReport position_report;
   DisplayMessage display_message;
   uint8_t led_level = LOW;
+  on_timeout_.begin();
+  event_timer_.begin();
   Serial.println("Milk arrival task started.");
   for (;;) {
     if (lid_position_report_queue_.pull_message(&position_report)) {
