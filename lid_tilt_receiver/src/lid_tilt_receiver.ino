@@ -3,8 +3,6 @@
  *
  *      Author: Eric Mintz
  */
-#include <src/AlarmAction.h>
-
 #include "Arduino.h"
 
 #include "driver/gpio.h"
@@ -33,10 +31,10 @@
 #include "AlarmAction.h"
 #include "AlarmMessage.h"
 #include "CommunicationEvent.h"
-#include "ConnectionStatusTask.h"
 #include "DeliveryLEDIlluminationStatus.h"
 #include "DeliveryLedTask.h"
 #include "DisplayMessage.h"
+#include "EspNowStatusAction.h"
 #include "GyroConnectionWatchdogTask.h"
 #include "LidPositionReport.h"
 #include "LCDDisplayTask.h"
@@ -53,7 +51,6 @@
 #define LCD_ROWS 2
 #define LCD_COLUMNS 16
 
-static TaskHandle_t h_connection_status_task;
 static TaskHandle_t h_lcd_display_task;
 static TaskHandle_t h_delivery_led_illumination_task;
 static TaskHandle_t h_milk_arrival_task;
@@ -116,11 +113,16 @@ static TaskWithActionH blink_red_task(
     &blink_red_action,
     2048);
 
-static ConnectionStatusTask connection_status_task(
+static EspNowStatusAction esp_now_status_action(
     blink_red_action,
     GREEN_LED_PIN,
     connection_status_queue,
     display_command_queue);
+static TaskWithActionH esp_now_status_task(
+    "Network Status",
+    NETWORK_STATUS_PRIORITY,
+    &esp_now_status_action,
+    4096);
 
 /**
  * Receives notification of lid tilt, which indicates that milk has been
@@ -197,7 +199,7 @@ void setup() {
 
   blink_red_task.start();
   blink_red_action.blink_off();
-  h_connection_status_task = connection_status_task.start();
+  esp_now_status_task.start();
 
   alarm_task.start();
 

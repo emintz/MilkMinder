@@ -5,9 +5,9 @@
  *      Author: Eric Mintz
  */
 
-#include "ConnectionStatusTask.h"
+#include "EspNowStatusAction.h"
 
-const ConnectionStatusTask::State ConnectionStatusTask::TRANSITION_TABLE
+const EspNowStatusAction::State EspNowStatusAction::TRANSITION_TABLE
     [NET_STATE_COUNT]
     [CONNECTION_STATUS_COUNT] = {
   { // NET_INITIALIZED
@@ -42,12 +42,12 @@ const ConnectionStatusTask::State ConnectionStatusTask::TRANSITION_TABLE
   }
 };
 
-ConnectionStatusTask::ConnectionStatusTask(
+EspNowStatusAction::EspNowStatusAction(
   BlinkAction& disconnected_led_action,
   uint8_t connected_led_pin,
   PullQueueHT<ConnectionStatusMessage>& connection_status_queue,
   PullQueueHT<DisplayMessage>& display_command_queue) :
-    Task("Network status", 2048, 15),
+//    Task("Network status", 2048, 15),
     state(NET_INITIALIZED),
     disconnected_led_action_(disconnected_led_action),
     connected_led_pin_(connected_led_pin),
@@ -55,14 +55,14 @@ ConnectionStatusTask::ConnectionStatusTask(
     display_command_queue_(display_command_queue) {
 }
 
-ConnectionStatusTask::~ConnectionStatusTask() {
+EspNowStatusAction::~EspNowStatusAction() {
 }
 
-TaskHandle_t ConnectionStatusTask::start() {
-  return create_and_start_task();
-}
+//TaskHandle_t ConnectionStatusAction::start() {
+//  return create_and_start_task();
+//}
 
-void ConnectionStatusTask::task_loop() {
+void EspNowStatusAction::run() {
   ConnectionStatusMessage connection_status_message;
   DisplayMessage display_command;
   for (;;) {

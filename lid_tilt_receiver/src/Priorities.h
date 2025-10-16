@@ -12,5 +12,6 @@
 
 #define ALARM_PRIORITY 10
 #define RED_BLINK_PRIORITY 5
+#define NETWORK_STATUS_PRIORITY 4
 
 #endif /* PRIORITIES_H_ */
