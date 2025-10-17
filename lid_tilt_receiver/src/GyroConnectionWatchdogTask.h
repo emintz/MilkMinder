@@ -15,13 +15,15 @@
 
 #include "Arduino.h"
 #include "ConnectionStatus.h"
-#include "PullQueueHT.h"
 #include "Resettable.h"
+
+#include "FreeRunningTimerH.h"
+#include "PullQueueHT.h"
 #include "Task.h"
+#include "VoidFunction.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/timers.h"
 
 class GyroConnectionWatchdogTask : public Task, public Resettable {
 public:
@@ -46,10 +48,26 @@ private:
     Event event;
   } EventMessage_t;
 
+  class OnTimerExpired : public VoidFunction {
+    friend class GyroConnectionWatchdogTask;
+    GyroConnectionWatchdogTask& watchdog_task_;
+
+    OnTimerExpired(GyroConnectionWatchdogTask& watchdog_task) :
+      watchdog_task_(watchdog_task) {
+    }
+
+    virtual ~OnTimerExpired() = default;
+
+    virtual void apply(void) {
+      watchdog_task_.expire();
+    }
+  };
+
   PullQueueHT<ConnectionStatusMessage>& connection_status_queue_;
-  State state;
-  TimerHandle_t h_timer;
-  PullQueueHT<EventMessage_t> timer_event_queue;
+  OnTimerExpired expiration_;
+  FreeRunningTimerH watchdog_timer_;
+  State state_;
+  PullQueueHT<EventMessage_t> timer_event_queue_;
 
   static EventMessage_t EXPIRE_MESSAGE;
   static EventMessage_t RESET_MESSAGE;
