@@ -94,7 +94,7 @@ MilkArrivalAction::ArrivalState MilkArrivalAction::STATE_TRANSITION_TABLE
     };
 
 MilkArrivalAction::MilkArrivalAction(
-    TimeTask *time_task_,
+    TimeAction *time_task_,
     PullQueueHT<AlarmMessage>& alarm_event_queue_,
     PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue_,
     PullQueueHT<DisplayMessage>& display_command_queue_,

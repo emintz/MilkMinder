@@ -5,15 +5,15 @@
  *      Author: Eric Mintz
  */
 
+#include <src/TimeAction.h>
 #include "StatusDisplayAction.h"
 
 #include <stdlib.h>
 
-#include "TimeTask.h"
 
 StatusDisplayAction::StatusDisplayAction(
     LiquidCrystal_I2C& display,
-    TimeTask *time_task,
+    TimeAction *time_task,
     PullQueueHT<DisplayMessage>& display_command_queue) :
       display_(display),
       time_task_(time_task),

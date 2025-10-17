@@ -5,7 +5,6 @@
  */
 
 
-#include <src/GyroConnectionWatchdogAction.h>
 
 #include "Arduino.h"
 
@@ -39,6 +38,7 @@
 #include "DeliveryLedTask.h"
 #include "DisplayMessage.h"
 #include "EspNowStatusAction.h"
+#include "GyroConnectionWatchdogAction.h"
 #include "LidPositionReport.h"
 #include "MilkArrivalAction.h"
 #include "PinAssignments.h"
@@ -46,7 +46,7 @@
 #include "ReceiveAction.h"
 #include "RippleTask.h"
 #include "StatusDisplayAction.h"
-#include "TimeTask.h"
+#include "TimeAction.h"
 #include "Timezone.h"
 #include "WhiteLedPin.h"
 
@@ -55,7 +55,6 @@
 #define LCD_COLUMNS 16
 
 static TaskHandle_t h_delivery_led_illumination_task;
-static TaskHandle_t h_time_task;
 
 // TODO: store the timezone in eeprom.
 static TimeChangeRule usEDT = {"EDT", Second, Sun, Mar, 2, -240};  //UTC - 4 hours
@@ -77,10 +76,16 @@ static TaskWithActionH alarm_task(
     4096);
 
 static RTC_DS3231 time_keeper;
-static TimeTask time_task(&time_keeper, &usEastern, display_command_queue);
+static TimeAction time_action(
+    &time_keeper, GPIO_NUM_17, &usEastern, display_command_queue);
+static TaskWithActionH time_task(
+    "Time Keeper",
+    TIMEKEEPER_PRIORITY,
+    &time_action,
+    4096);
 
 static MilkArrivalAction milk_arrival_action(
-    &time_task,
+    &time_action,
     alarm_event_queue,
     delivery_led_illumination_queue,
     display_command_queue,
@@ -93,7 +98,7 @@ static TaskWithActionH milk_arrival_task(
 
 static LiquidCrystal_I2C display(I2C_LCD_ADDRESS, LCD_COLUMNS, LCD_ROWS);
 static StatusDisplayAction status_display_action(
-    display, &time_task, display_command_queue);
+    display, &time_action, display_command_queue);
 static TaskWithActionH status_display_task(
     "Status Display",
     STATUS_DISPLAY_PRIORITY,
@@ -225,7 +230,8 @@ void setup() {
 
   gyro_connection_watchdog_task.start();
   Serial.println("Watchdog timer started.");
-  h_time_task = time_task.start(GPIO_NUM_17);
+  time_action.begin();
+  time_task.start();
 
   timeval tv;
   tv.tv_sec = time_keeper.now().unixtime();

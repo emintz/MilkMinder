@@ -10,6 +10,7 @@
 #ifndef LCDDISPLAYTASK_H_
 #define LCDDISPLAYTASK_H_
 
+#include <src/TimeAction.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -18,12 +19,11 @@
 #include "DisplayMessage.h"
 #include "LiquidCrystal_I2C.h"
 #include "PullQueueHT.h"
-#include "TimeTask.h"
 
 
 class StatusDisplayAction : public TaskAction {
   LiquidCrystal_I2C& display_;
-  TimeTask *time_task_;
+  TimeAction *time_task_;
   PullQueueHT<DisplayMessage>& display_command_queue_;
 
   /**
@@ -54,7 +54,7 @@ public:
    */
   StatusDisplayAction(
       LiquidCrystal_I2C& display,
-      TimeTask *time_task,
+      TimeAction *time_task,
       PullQueueHT<DisplayMessage>& display_command_queue);
   virtual ~StatusDisplayAction();
 };

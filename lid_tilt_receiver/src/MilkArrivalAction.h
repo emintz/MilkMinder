@@ -21,6 +21,7 @@
 #define MILKARRIVALTASK_H_
 
 #include <src/AlarmAction.h>
+#include <src/TimeAction.h>
 
 #include "Arduino.h"
 
@@ -33,7 +34,6 @@
 #include "OneShotTimerH.h"
 #include "PullQueueHT.h"
 #include "TaskAction.h"
-#include "TimeTask.h"
 
 class MilkArrivalAction : public TaskAction {
 
@@ -53,7 +53,7 @@ class MilkArrivalAction : public TaskAction {
       [MILK_ARRIVAL_NUMBER_OF_STATES]
       [LidPositionReport::LID_POS_NUMBER_OF_VALUES];
 
-  TimeTask *time_task;
+  TimeAction *time_task;
   PullQueueHT<AlarmMessage>& alarm_event_queue_;
   PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue_;
   PullQueueHT<DisplayMessage>& display_command_queue_;
@@ -83,7 +83,7 @@ class MilkArrivalAction : public TaskAction {
 
 public:
   MilkArrivalAction(
-      TimeTask * time_task,
+      TimeAction * time_task,
       PullQueueHT<AlarmMessage>& alarm_event_queue,
       PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
       PullQueueHT<DisplayMessage>& display_command_queue,
