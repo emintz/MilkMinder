@@ -20,7 +20,6 @@
 #include "PullQueueHT.h"
 #include "TaskAction.h"
 
-#include "BlinkTask.h"
 #include "MotionNotificationMessage.h"
 
 class EspNowTransmitAction : public TaskAction {
@@ -35,8 +34,7 @@ public:
   };
 
 private:
-  static BlinkTask *global_blink_task;
-  PullQueueHT<MotionNotificationMessage>& notification_send_queue_;
+  PullQueueHT<MotionNotificationMessage>& lid_position_queue_;
   ConnectionState connection_state;
   const uint8_t *peer_address;
   uint32_t start_time;
@@ -50,9 +48,7 @@ private:
 
 public:
 
-  static void set_blink_task(BlinkTask *blink_task) {
-    global_blink_task = blink_task;
-  }
+  static bool begin(void);
 
   /**
    * Constructor.
@@ -60,34 +56,29 @@ public:
    * Arguments
    *
    * Name                      Contents
-   * ------------------------- ---------------------------------------------------
-   * peer_address              The receiver's MAC address consisting of 6 unsigned
-   *                           bytes. See CommunicationSettings.h
-   * blink_task                Pointer to the blink task used to turn off the
-   *                           status LED when the receiver reconnects.
-   *
-   * Note: to avoid spurious error indication, BE SURE to suspend the blink task
-   * before binding it to an EspNowTransmitter.
+   * ------------------------- ------------------------------------------------
+   * peer_address              The receiver's MAC address consisting of 6
+   *                           unsigned bytes. See CommunicationSettings.h
+   * lid_position_queue        Provides lid position notifications
    */
 
   EspNowTransmitAction(
     const uint8_t *peer_address,
-    PullQueueHT<MotionNotificationMessage>& notification_send_queue,
-    BlinkTask *blink_task);
+    PullQueueHT<MotionNotificationMessage>& lid_position_queue);
   virtual ~EspNowTransmitAction();
 
   /**
-   * Initialize the transmitter. Disable the error indication blink
+   * Initialize ESP-NoW. Disable the error indication blink
    * and connect to the receiver. This might take some time.
    *
-   * Note: BE SURE to invoke EspNowTransmitter::begin() before sending
+   * Note: BE SURE to invoke EspNowTransmitter::espnow_start() before sending
    * messages on the notification send queue. Sending messages before
    * invoking begin() will cause undefined (and probably undesired)
    * behavior.
    *
    * TODO: consider implementing a timeout.
    */
-  bool begin();
+  bool espnow_start();
 
   /**
    * Invoked by the containing task to run the action. Application code

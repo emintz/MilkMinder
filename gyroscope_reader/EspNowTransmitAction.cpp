@@ -5,10 +5,12 @@
  *      Author: Eric Mintz
  */
 
-#include <EspNowTransmitAction.h>
+#include "EspNowTransmitAction.h"
 #include "TaskPriorities.h"
 
+#include "BlinkAction.h"
 #include "PinAssignments.h"
+#include "TaskWithActionH.h"
 
 #define WAIT_TIME_MILLIS 50
 
@@ -18,24 +20,34 @@ enum EspSendState {
   ESP_SEND_STATUS_LAST,  // MUST be last
 };
 
-BlinkTask* EspNowTransmitAction::global_blink_task = NULL;
+static BlinkAction blink_action(
+    RED_LED_PIN,
+    3,
+    100,
+    100,
+    500);
+static TaskWithActionH blink_task(
+    "Connection Signal",
+    3,
+    &blink_action,
+    4096);
+
+bool EspNowTransmitAction::begin(void) {
+  return blink_task.start();
+}
 
 void EspNowTransmitAction::send_callback(
   const uint8_t *mac_address,
   esp_now_send_status_t send_status) {
-  if (global_blink_task) {
-    switch (send_status) {
-    case ESP_NOW_SEND_SUCCESS:
-      digitalWrite(GREEN_LED_PIN, HIGH);
-      global_blink_task->suspend();
-      break;
-    case ESP_NOW_SEND_FAIL:
-      digitalWrite(GREEN_LED_PIN, LOW);
-      global_blink_task->resume();
-      break;
-    }
-  } else {
-    Serial.println("Blink task is unavailable.");
+  switch (send_status) {
+  case ESP_NOW_SEND_SUCCESS:
+    digitalWrite(GREEN_LED_PIN, HIGH);
+    blink_action.blink_off();
+    break;
+  case ESP_NOW_SEND_FAIL:
+    digitalWrite(GREEN_LED_PIN, LOW);
+    blink_action.blink_on();
+    break;
   }
 }
 
@@ -66,9 +78,8 @@ const EspNowTransmitAction::ConnectionState STATE_TRANSITION_TABLE
 
 EspNowTransmitAction::EspNowTransmitAction(
   const uint8_t *peer_address,
-  PullQueueHT<MotionNotificationMessage>& notification_send_queue,
-  BlinkTask *blink_task) :
-      notification_send_queue_(notification_send_queue),
+  PullQueueHT<MotionNotificationMessage>& notification_send_queue) :
+      lid_position_queue_(notification_send_queue),
       connection_state(STARTING),
       peer_address(peer_address),
       wait_for_incoming_in_ticks(pdMS_TO_TICKS(1)),
@@ -83,9 +94,8 @@ EspNowTransmitAction::~EspNowTransmitAction() {
 
 void EspNowTransmitAction::run() {
   bool send_message = false;
-  global_blink_task->resume();
   for (;;) {
-    bool receive_status = notification_send_queue_.pull_message(
+    bool receive_status = lid_position_queue_.pull_message(
         &notification_message, WAIT_TIME_MILLIS);
     if (!receive_status) {
       notification_message.status = GYROSCOPE_SIGNAL_LOST;
@@ -108,7 +118,7 @@ void EspNowTransmitAction::run() {
       case RECONNECTED:
         send_message = true;
         start_time = millis();
-        global_blink_task->suspend();
+        blink_action.blink_off();
         wait_for_incoming_in_ticks = pdMS_TO_TICKS(1000);
         break;
       case CONNECTED:
@@ -133,7 +143,7 @@ void EspNowTransmitAction::run() {
   }
 }
 
-bool EspNowTransmitAction::begin() {
+bool EspNowTransmitAction::espnow_start() {
   Serial.print("Initializing ESP-NOW ... ");
   esp_err_t esp_now_status = esp_now_init();
   Serial.println((esp_now_status == ESP_OK) ? "succeeded." : "failed.");

@@ -22,10 +22,10 @@
 #include "Wire.h"
 #include "WiFi.h"
 
-#include "BlinkTask.h"
 #include "CommunicationSettings.h"
 #include "PinAssignments.h"
 #include "TaskPriorities.h"
+#include "TaskWithActionH.h"
 
 #include "MotionNotificationMessage.h"
 
@@ -36,17 +36,9 @@ static TaskHandle_t h_connection_dropped_blink_task;
 
 static MPU6050 gyroscope(Wire);
 
-static BlinkTask connection_dropped_signal(
-    "Receiver connection lost",
-    RED_LED_PIN,
-    3,
-    150,
-    500);
-
 static EspNowTransmitAction esp_now_transmit_action(
     receiver_address,
-    notification_send_queue,
-    &connection_dropped_signal);
+    notification_send_queue);
 static TaskWithActionH esp_now_transmit_task(
     "ESP-Now transmit",
     ESP_NOW_SEND_PRIORITY,
@@ -80,16 +72,7 @@ static TaskWithActionH event_relay_task(
 
 static void start_blink_tasks() {
   Serial.print("Starting blink task ... ");
-  h_connection_dropped_blink_task =
-    connection_dropped_signal.start_blink_loop("ESP_NOW connection");
-  if (h_connection_dropped_blink_task) {
-    Serial.print("succeeded.");
-    vTaskSuspend(h_connection_dropped_blink_task);
-    Serial.println("Blink task suspended.");
-  } else {
-    Serial.print("failed.");
-  }
-  EspNowTransmitAction::set_blink_task(&connection_dropped_signal);
+  EspNowTransmitAction::begin();
 }
 
 /**
@@ -198,7 +181,7 @@ void setup() {
   start_blink_tasks();
 
   Serial.println("Configuring ESP-NOW transmitter.");
-  esp_now_transmit_action.begin();
+  esp_now_transmit_action.espnow_start();
 
   Serial.println("Event relay task.");
 
