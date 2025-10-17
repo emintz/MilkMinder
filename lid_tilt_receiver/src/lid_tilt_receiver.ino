@@ -2,9 +2,11 @@
  * Milk minder receiver.
  *
  *      Author: Eric Mintz
+ *
+ * MilkMinder receiver
  */
 
-
+#include <src/DeliveryLedAction.h>
 
 #include "Arduino.h"
 
@@ -35,7 +37,6 @@
 #include "AlarmMessage.h"
 #include "CommunicationEvent.h"
 #include "DeliveryLEDIlluminationStatus.h"
-#include "DeliveryLedTask.h"
 #include "DisplayMessage.h"
 #include "EspNowStatusAction.h"
 #include "GyroConnectionWatchdogAction.h"
@@ -53,8 +54,6 @@
 #define I2C_LCD_ADDRESS 0x27
 #define LCD_ROWS 2
 #define LCD_COLUMNS 16
-
-static TaskHandle_t h_delivery_led_illumination_task;
 
 // TODO: store the timezone in eeprom.
 static TimeChangeRule usEDT = {"EDT", Second, Sun, Mar, 2, -240};  //UTC - 4 hours
@@ -128,8 +127,13 @@ static TaskWithActionH receive_task(
     &receive_action,
     4096);
 
-static DeliveryLedTask delivery_led_task(
+static DeliveryLedAction delivery_led_action(
     delivery_led_illumination_queue, BLUE_LED_PIN, 100, 100);
+static TaskWithActionH delivery_led_task(
+    "Delivery LED",
+    DELIVERY_LED_PRIORITY,
+    &delivery_led_action,
+    4096);
 
 static BlinkAction blink_red_action(RED_LED_PIN, 1, 100, 100, 1);
 static TaskWithActionH blink_red_task(
@@ -219,8 +223,7 @@ void setup() {
   ripple_task.suspend();
   digitalWrite(WHITE_LED_PIN, LOW);
 
-  h_delivery_led_illumination_task =
-      delivery_led_task.start();
+  delivery_led_task.start();
 
   blink_red_task.start();
   blink_red_action.blink_off();
