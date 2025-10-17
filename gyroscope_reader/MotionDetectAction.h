@@ -22,7 +22,6 @@
 
 #include "MotionNotificationMessage.h"
 #include "PinAssignments.h"
-#include "Task.h"
 #include "TaskAction.h"
 
 #define DEGREES_TO_RADIANS (PI / 180.0)

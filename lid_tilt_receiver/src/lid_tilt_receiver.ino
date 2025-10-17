@@ -21,6 +21,7 @@
 #include "RTClib.h"
 #include "LiquidCrystal_I2C.h"
 #include "PullQueueHT.h"
+#include "RippleAction.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -45,7 +46,6 @@
 #include "PinAssignments.h"
 #include "Priorities.h"
 #include "ReceiveAction.h"
-#include "RippleTask.h"
 #include "StatusDisplayAction.h"
 #include "TimeAction.h"
 #include "Timezone.h"
@@ -108,8 +108,6 @@ static const uint8_t led_pins[] =
 	{RED_LED_PIN, YELLOW_LED_PIN, GREEN_LED_PIN, BLUE_LED_PIN};
 #define NUMBER_OF_LED_PINS 4
 
-static RippleTask ripple_task(led_pins, NUMBER_OF_LED_PINS, 100);
-
 static GyroConnectionWatchdogAction gyro_connection_watchdog(
     connection_status_queue);
 static TaskWithActionH gyro_connection_watchdog_task(
@@ -160,8 +158,6 @@ static TaskWithActionH esp_now_status_task(
 void setup() {
   gpio_install_isr_service(0);
   digitalWrite(WHITE_LED_PIN, HIGH);
-  ripple_task.start();
-  ripple_task.resume();
   Serial.begin(115200);
   Serial.print("Milk minder receiver compiled on ");
   Serial.print(__DATE__);
@@ -170,6 +166,9 @@ void setup() {
   Serial.print("Clock frequency is: ");
   Serial.println(rtc_clk_apb_freq_get());
   Serial.println("Test receiver is booting.");
+  RippleAction ripple_action(led_pins, NUMBER_OF_LED_PINS, 100);
+  TaskWithActionH ripple_task("Ripple", RIPPLE_PRIORITY, &ripple_action, 4096);
+  ripple_task.start();
 
   pinMode(BUILTIN_LED_PIN, OUTPUT);
   pinMode(RED_LED_PIN, OUTPUT);
@@ -220,7 +219,7 @@ void setup() {
   }
 
   vTaskDelay(pdMS_TO_TICKS(10000));
-  ripple_task.suspend();
+  ripple_task.stop();
   digitalWrite(WHITE_LED_PIN, LOW);
 
   delivery_led_task.start();
