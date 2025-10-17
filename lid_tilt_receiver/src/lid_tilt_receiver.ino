@@ -5,6 +5,8 @@
  */
 
 
+#include <src/GyroConnectionWatchdogAction.h>
+
 #include "Arduino.h"
 
 #include "driver/gpio.h"
@@ -37,7 +39,6 @@
 #include "DeliveryLedTask.h"
 #include "DisplayMessage.h"
 #include "EspNowStatusAction.h"
-#include "GyroConnectionWatchdogTask.h"
 #include "LidPositionReport.h"
 #include "MilkArrivalAction.h"
 #include "PinAssignments.h"
@@ -105,8 +106,13 @@ static const uint8_t led_pins[] =
 
 static RippleTask ripple_task(led_pins, NUMBER_OF_LED_PINS, 100);
 
-static GyroConnectionWatchdogTask gyro_connection_watchdog(
+static GyroConnectionWatchdogAction gyro_connection_watchdog(
     connection_status_queue);
+static TaskWithActionH gyro_connection_watchdog_task(
+    "ESP Now Watchdog",
+    GYRO_WATCHDOG_PRIORITY,
+    &gyro_connection_watchdog,
+    4096);
 
 static ReceiveAction receive_action(
     &gyro_connection_watchdog,
@@ -217,7 +223,7 @@ void setup() {
 
   alarm_task.start();
 
-  gyro_connection_watchdog.start();
+  gyro_connection_watchdog_task.start();
   Serial.println("Watchdog timer started.");
   h_time_task = time_task.start(GPIO_NUM_17);
 

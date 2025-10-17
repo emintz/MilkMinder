@@ -1,5 +1,5 @@
 /*
- * GyroConnectionWatchdogTask.h
+ * GyroConnectionWatchdogAction.h
  *
  *  Created on: May 21, 2023
  *      Author: Eric Mintz
@@ -10,8 +10,8 @@
  * the timer never expires.
  */
 
-#ifndef GYROCONNECTIONWATCHDOGTASK_H_
-#define GYROCONNECTIONWATCHDOGTASK_H_
+#ifndef GYROCONNECTIONWATCHDOGACTION_H_
+#define GYROCONNECTIONWATCHDOGACTION_H_
 
 #include "Arduino.h"
 #include "ConnectionStatus.h"
@@ -19,13 +19,13 @@
 
 #include "FreeRunningTimerH.h"
 #include "PullQueueHT.h"
-#include "Task.h"
+#include "TaskAction.h"
 #include "VoidFunction.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-class GyroConnectionWatchdogTask : public Task, public Resettable {
+class GyroConnectionWatchdogAction : public TaskAction, public Resettable {
 public:
   enum State {
     CREATED,
@@ -49,10 +49,10 @@ private:
   } EventMessage_t;
 
   class OnTimerExpired : public VoidFunction {
-    friend class GyroConnectionWatchdogTask;
-    GyroConnectionWatchdogTask& watchdog_task_;
+    friend class GyroConnectionWatchdogAction;
+    GyroConnectionWatchdogAction& watchdog_task_;
 
-    OnTimerExpired(GyroConnectionWatchdogTask& watchdog_task) :
+    OnTimerExpired(GyroConnectionWatchdogAction& watchdog_task) :
       watchdog_task_(watchdog_task) {
     }
 
@@ -72,20 +72,16 @@ private:
   static EventMessage_t EXPIRE_MESSAGE;
   static EventMessage_t RESET_MESSAGE;
 
-  static void on_timer_expired(TimerHandle_t h_timer);
-
 public:
-  GyroConnectionWatchdogTask(
+  GyroConnectionWatchdogAction(
       PullQueueHT<ConnectionStatusMessage>& connection_status_queue);
-  virtual ~GyroConnectionWatchdogTask();
+  virtual ~GyroConnectionWatchdogAction();
 
   void expire(void);
 
   virtual void reset(void);
 
-  TaskHandle_t start();
-
-  virtual void task_loop(void);
+  virtual void run(void) override;
 };
 
-#endif /* GYROCONNECTIONWATCHDOGTASK_H_ */
+#endif /* GYROCONNECTIONWATCHDOGACTION_H_ */
