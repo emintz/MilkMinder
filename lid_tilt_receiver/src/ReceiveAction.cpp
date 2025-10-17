@@ -22,7 +22,6 @@ static uint8_t builtin_pin_state = LOW;
 ReceiveAction::ReceiveAction(
     Resettable *watchdog_timer,
     PullQueueHT<LidPositionReport>& lid_position_report_queue) :
-//      Task("Receiver", 2048, 4),
       watchdog_timer(watchdog_timer),
       lid_position_report_queue_(lid_position_report_queue) {
 }

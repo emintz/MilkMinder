@@ -10,8 +10,7 @@
 
 class Resettable {
 public:
-  Resettable();
-  virtual ~Resettable();
+  virtual ~Resettable() = default;
 
   virtual void reset(void) = 0;
 };
