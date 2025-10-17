@@ -1,13 +1,13 @@
 /*
- * ReceiverTask.cpp
+ * ReceiveAction.cpp
  *
  *  Created on: Feb 14, 2023
  *      Author: Eric Mintz
  */
 
-#include "Arduino.h"
+#include "ReceiveAction.h"
 
-#include "ReceiverTask.h"
+#include "Arduino.h"
 
 #include <stdlib.h>
 
@@ -19,19 +19,21 @@ static PullQueueHT<CommunicationEvent> the_motion_notification_queue(3);
 
 static uint8_t builtin_pin_state = LOW;
 
-ReceiverTask::ReceiverTask(
+ReceiveAction::ReceiveAction(
     Resettable *watchdog_timer,
     PullQueueHT<LidPositionReport>& lid_position_report_queue) :
-      Task("Receiver", 2048, 4),
+//      Task("Receiver", 2048, 4),
       watchdog_timer(watchdog_timer),
       lid_position_report_queue_(lid_position_report_queue) {
 }
 
-ReceiverTask::~ReceiverTask() {
+ReceiveAction::~ReceiveAction() {
 }
 
-bool ReceiverTask::begin() {
-  bool esp_now_status = esp_now_init() == ESP_OK;
+bool ReceiveAction::begin() {
+  bool esp_now_status =
+      ESP_OK == esp_now_init()
+      && ESP_OK == esp_now_register_recv_cb(on_esp_now_received);
   Serial.println(esp_now_status
       ? "ESP_NOW initialized and ready to start."
       : "ESP_NOW initialization failed.");
@@ -43,7 +45,7 @@ bool ReceiverTask::begin() {
   return esp_now_status && queue_status;
 }
 
-void ReceiverTask::on_esp_now_received(
+void ReceiveAction::on_esp_now_received(
   const esp_now_recv_info* info,
   const uint8_t *received_data,
   int len) {
@@ -55,7 +57,7 @@ void ReceiverTask::on_esp_now_received(
   the_motion_notification_queue.send_message(&comm_event, pdMS_TO_TICKS(10));
 }
 
-void ReceiverTask::task_loop() {
+void ReceiveAction::run() {
   CommunicationEvent event;
   memset(&event, 0, sizeof(event));
   LidPositionReport lid_position_report;
@@ -91,13 +93,3 @@ void ReceiverTask::task_loop() {
   }
 }
 
-TaskHandle_t ReceiverTask::start() {
-  if (!esp_now_register_recv_cb(on_esp_now_received) == ESP_OK) {
-    Serial.println("Receive callback registration failed.");
-    // TODO: panic
- } else {
-    Serial.println("ESP_NOW handler started.");
- }
-
-  return create_and_start_task();
-}

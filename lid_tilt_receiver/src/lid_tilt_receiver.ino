@@ -3,6 +3,8 @@
  *
  *      Author: Eric Mintz
  */
+
+
 #include "Arduino.h"
 
 #include "driver/gpio.h"
@@ -40,7 +42,7 @@
 #include "MilkArrivalAction.h"
 #include "PinAssignments.h"
 #include "Priorities.h"
-#include "ReceiverTask.h"
+#include "ReceiveAction.h"
 #include "RippleTask.h"
 #include "StatusDisplayAction.h"
 #include "TimeTask.h"
@@ -52,7 +54,6 @@
 #define LCD_COLUMNS 16
 
 static TaskHandle_t h_delivery_led_illumination_task;
-//static TaskHandle_t h_milk_arrival_task;
 static TaskHandle_t h_time_task;
 
 // TODO: store the timezone in eeprom.
@@ -107,9 +108,14 @@ static RippleTask ripple_task(led_pins, NUMBER_OF_LED_PINS, 100);
 static GyroConnectionWatchdogTask gyro_connection_watchdog(
     connection_status_queue);
 
-static ReceiverTask receiver_task(
+static ReceiveAction receive_action(
     &gyro_connection_watchdog,
     lid_position_report_queue);
+static TaskWithActionH receive_task(
+    "Receive",
+    RECEIVE_PRIORITY,
+    &receive_action,
+    4096);
 
 static DeliveryLedTask delivery_led_task(
     delivery_led_illumination_queue, BLUE_LED_PIN, 100, 100);
@@ -222,12 +228,11 @@ void setup() {
   settimeofday(&tv, NULL);
   Serial.println("Time set.");
 
-  ReceiverTask::begin();
+  ReceiveAction::begin();
 
-//  h_milk_arrival_task =
   milk_arrival_task.start();
 
-  receiver_task.start();
+  receive_task.start();
   Serial.println("Receiver task started.");
   memset(&display_message, 0, sizeof(display_message));
   display_message.command = LCD_RUN;

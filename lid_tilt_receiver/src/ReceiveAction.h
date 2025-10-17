@@ -1,5 +1,5 @@
 /*
- * ReceiverTask.h
+ * ReceiveAction.h
  *
  *  Created on: Feb 14, 2023
  *      Author: Eric Mintz
@@ -8,21 +8,20 @@
  * user interface includes the alarm (a.k.a.) beeper, LCD, and LEDS.
  */
 
-#ifndef RECEIVERTASK_H_
-#define RECEIVERTASK_H_
+#ifndef RECEIVEACTION_H_
+#define RECEIVEACTION_H_
 
 #include "freertos/FreeRTOS.h"
 
 #include "Resettable.h"
 #include "LidPositionReport.h"
 #include "PullQueueHT.h"
-#include "Task.h"
+#include "TaskAction.h"
 
 #include <esp_now.h>
 
 
-class ReceiverTask :
-    public Task {
+class ReceiveAction : public TaskAction {
   enum LidPosition {
     OPEN,
     CLOSED,
@@ -37,17 +36,15 @@ class ReceiverTask :
       const uint8_t *received_data,
       int len);
 
-  virtual void task_loop();
+  virtual void run(void) override;
 
 public:
-  ReceiverTask(
+  ReceiveAction(
       Resettable *watchdog_timer,
       PullQueueHT<LidPositionReport>& lid_position_report_queue);
-  virtual ~ReceiverTask(void);
+  virtual ~ReceiveAction(void);
 
   static bool begin(void);
-
-  TaskHandle_t start(void);
 };
 
-#endif /* RECEIVERTASK_H_ */
+#endif /* RECEIVEACTION_H_ */

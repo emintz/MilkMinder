@@ -65,7 +65,7 @@ public:
 
   virtual void reset(void);
 
-  TaskHandle_t start(/* QueueHandle_t h_communications_event_queue */);
+  TaskHandle_t start();
 
   virtual void task_loop(void);
 };
