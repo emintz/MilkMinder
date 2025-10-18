@@ -105,8 +105,8 @@ static TaskWithActionH status_display_task(
     4096);
 
 static const uint8_t led_pins[] =
-	{RED_LED_PIN, YELLOW_LED_PIN, GREEN_LED_PIN, BLUE_LED_PIN};
-#define NUMBER_OF_LED_PINS 4
+	{RED_LED_PIN, YELLOW_LED_PIN, GREEN_LED_PIN, BLUE_LED_PIN, WHITE_LED_PIN};
+#define NUMBER_OF_LED_PINS sizeof(led_pins)
 
 static GyroConnectionWatchdogAction gyro_connection_watchdog(
     connection_status_queue);
@@ -219,6 +219,7 @@ void setup() {
   }
 
   vTaskDelay(pdMS_TO_TICKS(10000));
+  ripple_action.ripple_off();
   ripple_task.stop();
   digitalWrite(WHITE_LED_PIN, LOW);
 
