@@ -26,6 +26,11 @@ public:
   virtual ~RippleAction() = default;
 
   virtual void run(void) override;
+
+  void ripple_off(void) {
+    suspend();
+    all_off();
+  }
 };
 
 #endif /* RIPPLEACTION_H_ */
