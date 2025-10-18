@@ -107,6 +107,10 @@ void setup() {
   Serial.print(" at ");
   Serial.println(__TIME__);
 
+  Serial.printf("Receiver MAC address: : %02x:%02x:%02x:%02x:%02x:%02x\n",
+      receiver_address[0], receiver_address[1], receiver_address[2],
+      receiver_address[3], receiver_address[4], receiver_address[5]);
+
   init_leds();
   RippleAction ripple_action(led_pins, NUMBER_OF_LED_PINS, 100);
   TaskWithActionH ripple_task("Ripple", RIPPLE_PRIORITY, &ripple_action, 4096);

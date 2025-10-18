@@ -12,10 +12,7 @@
 
 #include "Arduino.h"
 
-// Receiver MAC addresses:
-//
-// Production: CC:DB:A7:01:E6:10
-// Development: 78:21:84:7f:80:fc
+// Receiver MAC address: 78:21:84:7f:80:fc
 
 static const uint8_t receiver_address[] = {0x78, 0x21, 0x84, 0x7f, 0x80, 0xfc};
 

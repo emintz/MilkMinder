@@ -15,8 +15,10 @@
 
 #include <stdlib.h>
 
+#include <esp_now.h>
+#include <esp_wifi.h>
+
 #include "WiFi.h"
-#include "esp_now.h"
 #include "Wire.h"
 #include "RTClib.h"
 #include "LiquidCrystal_I2C.h"
@@ -201,9 +203,19 @@ void setup() {
   if (!WiFi.mode(WIFI_STA)) {
     Serial.println("Could not configure WIFI.");
     // TODO: display a error and halt.
+    Serial.println("Wifi startup failed.");
   }
-  Serial.print("MAC address: ");
-  Serial.println(WiFi.macAddress());
+  Serial.println("Wifi started.");
+  uint8_t mac_address[6];
+  memset(mac_address, 0, sizeof(mac_address));
+  if (ESP_OK != esp_wifi_get_mac(WIFI_IF_STA, mac_address)) {
+   Serial.println("MAC address read failed.");
+  } else {
+   Serial.printf(
+       "MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n",
+       mac_address[0], mac_address[1], mac_address[2],
+       mac_address[3], mac_address[4], mac_address[5]);
+  }
 
   if (!esp_now_init() == ESP_OK) {
      Serial.println("ESP_NOW initialization failed.");
