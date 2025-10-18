@@ -18,6 +18,7 @@
 #include <esp_wifi.h>
 
 #include "MPU6050_light.h"
+#include "RippleAction.h"
 #include "PullQueueHT.h"
 #include "TaskWithActionH.h"
 #include "Wire.h"
@@ -29,6 +30,10 @@
 #include "TaskWithActionH.h"
 
 #include "MotionNotificationMessage.h"
+
+static const uint8_t led_pins[] =
+        {RED_LED_PIN, YELLOW_LED_PIN, GREEN_LED_PIN, BLUE_LED_PIN};
+#define NUMBER_OF_LED_PINS 4
 
 static PullQueueHT<MotionNotificationMessage> gyroscope_event_queue(10);
 static PullQueueHT<MotionNotificationMessage> notification_send_queue(10);
@@ -93,27 +98,6 @@ static void init_leds(void) {
   digitalWrite(YELLOW_LED_PIN, LOW);
   digitalWrite(GREEN_LED_PIN, LOW);
   digitalWrite(BLUE_LED_PIN, LOW);
-
-    // Lamp test
-
-  vTaskDelay(pdMS_TO_TICKS(1000));
-  Serial.println("Illuminating LEDs.");
-  digitalWrite(RED_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(YELLOW_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(GREEN_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(BLUE_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(5000));
-  Serial.println("Extinguishing LEDs.");
-  digitalWrite(RED_LED_PIN, LOW);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(YELLOW_LED_PIN, LOW);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(GREEN_LED_PIN, LOW);
-  vTaskDelay(pdMS_TO_TICKS(150));
-  digitalWrite(BLUE_LED_PIN, LOW);
 }
 
 void setup() {
@@ -124,20 +108,15 @@ void setup() {
   Serial.println(__TIME__);
 
   init_leds();
+  RippleAction ripple_action(led_pins, NUMBER_OF_LED_PINS, 100);
+  TaskWithActionH ripple_task("Ripple", RIPPLE_PRIORITY, &ripple_action, 4096);
+  ripple_task.start();
 
   /**
    * Initialize low-level I/O.
    */
-  Serial.println("Illuminating yellow.");
-  digitalWrite(YELLOW_LED_PIN, HIGH);
   Serial.print("Configuring WiFi ... ");
   Serial.flush();
-  digitalWrite(RED_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(100));
-  digitalWrite(RED_LED_PIN, LOW);
-  digitalWrite(RED_LED_PIN, HIGH);
-  vTaskDelay(pdMS_TO_TICKS(100));
-  digitalWrite(RED_LED_PIN, LOW);
   if (WiFi.mode(WIFI_STA)) {
     Serial.println(" ... succeeded");
     uint8_t mac_address[6];
@@ -154,13 +133,10 @@ void setup() {
     Serial.println(" ... failed.");
   }
 
-  digitalWrite(GREEN_LED_PIN, HIGH);
   Serial.print("Initializing I2C ... ");
   Serial.flush();
   Wire.setPins(I2C_SDA_PIN, I2C_SCL_PIN);
   Wire.begin();
-  digitalWrite(GREEN_LED_PIN, LOW);
-  digitalWrite(YELLOW_LED_PIN, LOW);
   Serial.println(" done.");
 
   /**
@@ -214,6 +190,8 @@ void setup() {
 
   Serial.println("Setup completed.");
   Serial.flush();
+  ripple_action.ripple_off();
+  ripple_task.stop();
 }
 
 /**
