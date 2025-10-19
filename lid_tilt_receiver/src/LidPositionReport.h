@@ -23,6 +23,7 @@ public:
     LID_POS_CLOSED,  // Lid has been closed
     LID_POS_OPEN_TIMEOUT,  // Lid has open timeout
     LID_POS_CLOSE_TIMEOUT,  // Lid closure timeout
+    LID_POS_SYNC_LOST,  // Out of synchronization with gyro reader
     LID_POS_NUMBER_OF_VALUES,  // MUST be last
   };
 

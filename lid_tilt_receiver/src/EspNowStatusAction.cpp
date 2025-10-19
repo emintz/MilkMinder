@@ -47,7 +47,6 @@ EspNowStatusAction::EspNowStatusAction(
   uint8_t connected_led_pin,
   PullQueueHT<ConnectionStatusMessage>& connection_status_queue,
   PullQueueHT<DisplayMessage>& display_command_queue) :
-//    Task("Network status", 2048, 15),
     state(NET_INITIALIZED),
     disconnected_led_action_(disconnected_led_action),
     connected_led_pin_(connected_led_pin),
@@ -57,10 +56,6 @@ EspNowStatusAction::EspNowStatusAction(
 
 EspNowStatusAction::~EspNowStatusAction() {
 }
-
-//TaskHandle_t ConnectionStatusAction::start() {
-//  return create_and_start_task();
-//}
 
 void EspNowStatusAction::run() {
   ConnectionStatusMessage connection_status_message;

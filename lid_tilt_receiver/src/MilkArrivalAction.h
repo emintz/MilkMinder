@@ -46,6 +46,7 @@ class MilkArrivalAction : public TaskAction {
     MILK_ARRIVAL_CONFIRMED_DELIVERY_IS_COMPLETE,
     MILK_ARRIVAL_SUSPECT_TAMPERING,
     MILK_ARRIVAL_CONFIRMED_TAMPERING,
+    MILK_ARRIVAL_SYNC_LOST,
     MILK_ARRIVAL_NUMBER_OF_STATES,
   };
 
@@ -75,6 +76,9 @@ class MilkArrivalAction : public TaskAction {
    */
   void lid_is_open(void);
 
+  /**
+   * Silence any running alarm.
+   */
   void quiesce(void);
 
   void start_countdown(
