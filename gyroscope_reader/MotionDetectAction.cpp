@@ -55,7 +55,7 @@ void MotionDetectAction::run() {
     float tan_roll = tan(roll_in_degrees * DEGREES_TO_RADIANS);
     float tan_pitch = tan(pitch_in_degrees * DEGREES_TO_RADIANS);
     float inclination = atan(sqrt(tan_roll * tan_roll + tan_pitch * tan_pitch));
-
+    memset(&notification_message_, 0, sizeof(notification_message_));
     notification_message_.temperature_celsius =
       temperature_sensor_.getTemperature();
     notification_message_.status =

@@ -10,6 +10,8 @@
 #ifndef MOTIONNOTIFICATIONMESSAGE_H_
 #define MOTIONNOTIFICATIONMESSAGE_H_
 
+#include "freertos/FreeRTOS.h"
+
 #define ABSOLUTE_ZERO -273.15
 
 enum MotionStatus {
@@ -21,8 +23,24 @@ enum MotionStatus {
 };
 
 struct MotionNotificationMessage {
+  /**
+   * Event type: what the lid did, including
+   * nothing at all.
+   */
   MotionStatus status;
+  /**
+   * Gyroscope temperature
+   */
   float temperature_celsius;
+  /**
+   * The time when the lid first opened, or zero if the lid has not
+   * opened yet.
+   */
+  TickType_t when_opened;
+  /**
+   * The number of times the lid has been opened
+   */
+  uint16_t opened_count;
 };
 
 #endif /* MOTIONNOTIFICATIONMESSAGE_H_ */
