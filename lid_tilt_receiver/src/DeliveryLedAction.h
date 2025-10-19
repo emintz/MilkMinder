@@ -31,8 +31,6 @@ public:
       uint16_t off_time_ms);
   virtual ~DeliveryLedAction();
 
-//  TaskHandle_t start(void);
-
   virtual void run() override;
 };
 
