@@ -104,6 +104,10 @@ void StatusDisplayAction::run() {
           display_.setCursor(0, 0);
           display_.print("Milk Arriving   ");
           break;
+        case LCD_SYNC_LOST:
+          display_.setCursor(0, 0);
+          display_.print("Lost Synch      ");
+          break;
       }
     }
   }

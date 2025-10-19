@@ -56,7 +56,7 @@ const EventRelayAction::State EventRelayAction::TRANSITION_TABLE
   },
   {  // EventRelayAction::State::GYRO_CONFIRMED_OPEN
       EventRelayAction::State::GYRO_NEW_CLOSURE_RECEIVED, // LID_HAS_NOT_MOVED
-      EventRelayAction::State::GYRO_VERIFYING_OPEN, // LID_RAISED
+      EventRelayAction::State::GYRO_CONFIRMED_OPEN, // LID_RAISED
       EventRelayAction::State::GYRO_SIGNAL_LOST, // GYROSCOPE_SIGNAL_LOST
       EventRelayAction::State::GYRO_NUMBER_OF_STATES, // PING
   },
@@ -102,10 +102,13 @@ EventRelayAction::~EventRelayAction() {
 }
 
 void EventRelayAction::run() {
+  Serial.println("Event relay task started.");
   MotionNotificationMessage message;
   State maybe_next_state;
   MotionStatus motion_status;
   uint32_t lid_moved_at_milliseconds = 0;
+  uint32_t lid_first_opened_at_milliseconds = 0;
+  uint16_t number_of_times_lid_opened = 0;
   Serial.print("Initial state: ");
   Serial.println(static_cast<size_t>(state));
   for (;;) {
@@ -138,6 +141,14 @@ void EventRelayAction::run() {
           if (CONFIRMATION_TIME_MS <= millis() - lid_moved_at_milliseconds) {
             state = EventRelayAction::State::GYRO_CONFIRMED_OPEN;
             motion_status = LID_RAISED;
+            if (0 == number_of_times_lid_opened) {
+              lid_first_opened_at_milliseconds = millis();
+            }
+            ++number_of_times_lid_opened;
+            Serial.printf(
+                "Lid opened %u time(s). First open was %lu microseconds ago.\n",
+                number_of_times_lid_opened,
+                millis() - lid_first_opened_at_milliseconds);
           }
           break;
         case EventRelayAction::State::GYRO_CONFIRMED_OPEN:
@@ -148,7 +159,12 @@ void EventRelayAction::run() {
           break;
         }
       }
+      memset(&message, 0, sizeof(message));
       message.status = motion_status;
+      if (0 < number_of_times_lid_opened) {
+        message.when_opened = millis() - lid_first_opened_at_milliseconds;
+      }
+      message.opened_count = number_of_times_lid_opened;
       send_to_receiver_queue_.send_message(&message, 10);
     }
   }

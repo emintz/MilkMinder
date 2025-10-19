@@ -57,6 +57,18 @@ const struct AlarmAction::AlarmSignal lid_open_signal = {
   lid_open,
 };
 
+const struct AlarmAction::LevelAndDuration lost_sync_alarm[] = {
+    { HIGH, 50 },
+    { LOW, 50 },
+    { HIGH, 100 },
+    { LOW, 50 },
+};
+
+const struct AlarmAction::AlarmSignal lost_sync_signal {
+  4,
+  lost_sync_alarm,
+};
+
 const struct AlarmAction::LevelAndDuration panic_alarm[] = {
   { HIGH, 950 },
   { LOW, 50 },
@@ -111,6 +123,9 @@ void AlarmAction::run() {
         break;
       case ALARM_EVENT_LID_OPEN:
         emit_alarm(lid_open_signal);
+        break;
+      case ALARM_SYNC_LOST:
+        emit_alarm(lost_sync_signal);
         break;
       case ALARM_EVENT_TRANSMITTER_PANIC:
         emit_alarm(panic_alarm_signal);

@@ -29,6 +29,7 @@ enum DisplayCommand {
   LCD_TRANSMITTER_PANIC,    // Transmitter failure, e.g. gyroscope down
   LCD_TAMPER_ALERT,         // Milk box accessed 2 or more times.
   LCD_DELIVERY_IN_PROGRESS, // Milk is being delivered
+  LCD_SYNC_LOST,            // Lost synchronization with the transmitter
 };
 
 struct DisplayMessage {

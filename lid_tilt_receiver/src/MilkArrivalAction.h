@@ -81,6 +81,9 @@ class MilkArrivalAction : public TaskAction {
    */
   void quiesce(void);
 
+  /**
+   * Starts the state change timeout
+   */
   void start_countdown(
       TickType_t timeout,
       LidPositionReport::PositionValue notification_on_expiration);

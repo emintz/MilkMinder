@@ -10,15 +10,15 @@
 #ifndef LCDDISPLAYTASK_H_
 #define LCDDISPLAYTASK_H_
 
-#include <src/TimeAction.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
-#include "TaskAction.h"
 
 #include "DisplayMessage.h"
 #include "LiquidCrystal_I2C.h"
 #include "PullQueueHT.h"
+
+#include "TaskAction.h"
+#include "TimeAction.h"
 
 
 class StatusDisplayAction : public TaskAction {

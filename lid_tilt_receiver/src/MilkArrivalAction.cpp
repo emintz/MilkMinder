@@ -28,6 +28,10 @@ static const AlarmMessage LID_OPEN_ALARM = {
   AlarmEvent::ALARM_EVENT_LID_OPEN
 };
 
+static const AlarmMessage SYNC_LOST_ALARM = {
+    AlarmEvent::ALARM_SYNC_LOST
+};
+
 static const LedIlluminationMessage LED_OFF = { DELIVERY_LED_OFF };
 static const LedIlluminationMessage LED_BLINK = { DELIVERY_LED_BLINK };
 static const LedIlluminationMessage LED_ON = { DELIVERY_LED_ON };
@@ -211,6 +215,9 @@ void MilkArrivalAction::run() {
           display_command_queue_.send_message(&display_message, 0);
           break;
         case MILK_ARRIVAL_SYNC_LOST:
+          display_message.command = LCD_SYNC_LOST;
+          display_command_queue_.send_message(&display_message, 0);
+          alarm_event_queue_.send_message(&SYNC_LOST_ALARM, 0);
           break;
         case ArrivalState::MILK_ARRIVAL_NUMBER_OF_STATES:
           break;

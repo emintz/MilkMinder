@@ -18,6 +18,7 @@
     ALARM_EVENT_DELIVERED,          // Milk has been delivered
     ALARM_EVENT_DISCONNECTED,       // ESP-Now connection lost
     ALARM_EVENT_LID_OPEN,           // Milk box lid opened
+    ALARM_SYNC_LOST,                // Out of sync with gyroscope sender
     ALARM_EVENT_TRANSMITTER_PANIC,  // Something went horribly wrong
   };
   /**

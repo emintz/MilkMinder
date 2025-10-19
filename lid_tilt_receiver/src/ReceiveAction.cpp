@@ -23,7 +23,8 @@ ReceiveAction::ReceiveAction(
     Resettable *watchdog_timer,
     PullQueueHT<LidPositionReport>& lid_position_report_queue) :
       watchdog_timer(watchdog_timer),
-      lid_position_report_queue_(lid_position_report_queue) {
+      lid_position_report_queue_(lid_position_report_queue),
+      lid_open_count_(0) {
 }
 
 ReceiveAction::~ReceiveAction() {
@@ -76,7 +77,11 @@ void ReceiveAction::run() {
           lid_position_report_queue_.send_message(&lid_position_report, 0);
           break;
         case LID_RAISED:
-          lid_position_report.lid_position = LidPositionReport::LID_POS_OPEN;
+          ++lid_open_count_;
+          lid_position_report.lid_position =
+              event.event_type.opened_count == lid_open_count_
+                  ? LidPositionReport::LID_POS_OPEN
+                  : LidPositionReport::LID_POS_SYNC_LOST;;
           lid_position_report_queue_.send_message(&lid_position_report, 0);
           break;
         case GYROSCOPE_SIGNAL_LOST:
@@ -84,6 +89,11 @@ void ReceiveAction::run() {
           //       at the moment.
           break;
         case PING:
+          if (event.event_type.opened_count != lid_open_count_) {
+            lid_position_report.lid_position =
+                LidPositionReport::LID_POS_SYNC_LOST;
+            lid_position_report_queue_.send_message(&lid_position_report, 0);
+          }
           break;
         case LAST_NOTIFICATION_STATUS:  // Should not happen
           break;

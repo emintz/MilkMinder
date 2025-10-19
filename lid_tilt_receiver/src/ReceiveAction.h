@@ -30,6 +30,7 @@ class ReceiveAction : public TaskAction {
 
   Resettable * watchdog_timer;
   PullQueueHT<LidPositionReport>& lid_position_report_queue_;
+  uint16_t lid_open_count_;
 
   static void on_esp_now_received(
     const esp_now_recv_info* info,
