@@ -237,8 +237,12 @@ void setup() {
 
   delivery_led_task.start();
 
+  /**
+   * Assume the network is disconnected until shown otherwise.
+   */
   blink_red_task.start();
-  blink_red_action.blink_off();
+  blink_red_action.blink_on();
+
   esp_now_status_task.start();
 
   alarm_task.start();
