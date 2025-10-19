@@ -33,10 +33,10 @@ struct MotionNotificationMessage {
    */
   float temperature_celsius;
   /**
-   * The time when the lid first opened, or zero if the lid has not
-   * opened yet.
+   * The time in milliseconds since the lid first opened, or zero if
+   * the lid has not opened.
    */
-  TickType_t when_opened;
+  unsigned long when_opened;
   /**
    * The number of times the lid has been opened
    */
