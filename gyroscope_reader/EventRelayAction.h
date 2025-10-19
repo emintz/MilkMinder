@@ -50,8 +50,8 @@ private:
   PullQueueHT<MotionNotificationMessage>& tilt_notification_queue_;
   PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue_;
   State state;
-  ReceiverConnectionState connection_state;
-  MotionNotificationMessage notification_message;
+  ReceiverConnectionState connection_state_;
+  MotionNotificationMessage notification_message_;
 
 public:
   EventRelayAction(

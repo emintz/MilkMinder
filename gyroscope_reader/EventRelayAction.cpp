@@ -93,9 +93,9 @@ EventRelayAction::EventRelayAction(
         tilt_notification_queue_(tilt_notification_queue),
         send_to_receiver_queue_(send_to_receiver_queue),
         state(EventRelayAction::State::GYRO_CREATED),
-        connection_state(EventRelayAction::ReceiverConnectionState::UNKNOWN) {
-  notification_message.status = LID_HAS_NOT_MOVED;
-  notification_message.temperature_celsius = ABSOLUTE_ZERO;
+        connection_state_(EventRelayAction::ReceiverConnectionState::UNKNOWN) {
+  notification_message_.status = LID_HAS_NOT_MOVED;
+  notification_message_.temperature_celsius = ABSOLUTE_ZERO;
 }
 
 EventRelayAction::~EventRelayAction() {
