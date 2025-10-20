@@ -29,9 +29,11 @@
 #define INCLINATION_THRESHOLD (PI / 6)
 
 /**
- * Monitors the MPU6050 gyroscope to detect motion. Notifies the event
- * forwarder when the gyro's Z offset exceeds the lid open threshold
- * or returns to the horizontal.
+ * Monitors the MPU6050 gyroscope to detect motion and passes the raw position
+ * to the event forwarder. The lid is considered open when the gyro's Z
+ * offset exceeds the lid open threshold, otherwise the lid is considered
+ * closed. The notification also includes the internal gyro temperature
+ * which is currently unused but included for completeness.
  */
 class MotionDetectAction : public TaskAction {
   MPU6050& gyroscope_;
@@ -45,6 +47,16 @@ class MotionDetectAction : public TaskAction {
   PullQueueHT<MotionNotificationMessage>& gyroscope_event_queue_;
 
 public:
+  /**
+   * Constructor
+   *
+   * Arguments
+   *
+   * Name                        Contents
+   * --------------------------- ----------------------------------------------
+   * gyroscope_event_queue       Output queue -- carries notifications to the
+   *                             event forwarder
+   */
   MotionDetectAction(
       PullQueueHT<MotionNotificationMessage>& gyroscope_event_queue,
       MPU6050 &gyroscope);
@@ -58,8 +70,7 @@ public:
 
   /**
    * The motion detection loop reads the tilt angle, which will be 0
-   * when the lid is level, and alerts when exceeds  This
-   * happens when the tilt angle off the horizontal exceeds
+   * when the lid is level, and alerts when lid inclination equals or exceeds
    * INCLINATION_THRESHOLD. Note that the closed position is 0 degrees.
    */
   virtual void run(void) override;

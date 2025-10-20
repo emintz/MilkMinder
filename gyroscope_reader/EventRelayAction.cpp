@@ -8,12 +8,15 @@
  * lid is tilted.
  */
 
-#include <EventRelayAction.h>
+#include "EventRelayAction.h"
 
 #include "Arduino.h"
 
 #include "TaskPriorities.h"
 
+/**
+ * State machine to manage the forwarding delay.
+ */
 const EventRelayAction::State EventRelayAction::TRANSITION_TABLE
     [static_cast<size_t>(EventRelayAction::State::GYRO_NUMBER_OF_STATES)]
     [LAST_NOTIFICATION_STATUS] =

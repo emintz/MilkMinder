@@ -5,9 +5,8 @@
  *      Author: Eric Mintz
  *
  * Monitors the motion notification queue and alerts the receiver when
- * the lid is tilted. The sender monitors Z acceleration to determine
- * tilt. It relays incoming messages from the Gyroscope Task to the
- * ESP NOW transmitter.
+ * the lid is moved. To prevent spurious notifications, the forwarder delays
+ * forwarding for a set period to filter out random jolts.
  */
 
 #ifndef EVENTRELAYACTION_H_
@@ -54,6 +53,16 @@ private:
   MotionNotificationMessage notification_message_;
 
 public:
+  /**
+   * Constructor
+   *
+   * Arguments
+   *
+   * Name                        Contents
+   * --------------------------- ----------------------------------------------
+   * lid_tilt_notification_queue Input queue providing raw gyroscope data
+   * send_to_receiver_queue      Output queue carrying debounced lid events
+   */
   EventRelayAction(
       PullQueueHT<MotionNotificationMessage>& tilt_notification_queue,
       PullQueueHT<MotionNotificationMessage>& send_to_receiver_queue);

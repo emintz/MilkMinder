@@ -178,8 +178,6 @@ void setup() {
   Serial.println("Configuring ESP-NOW transmitter.");
   esp_now_transmit_action.espnow_start();
 
-  Serial.println("Event relay task.");
-
   if (event_relay_task.start()) {
     Serial.println("Relay task started.");
   } else {

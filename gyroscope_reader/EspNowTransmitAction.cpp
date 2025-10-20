@@ -162,9 +162,9 @@ bool EspNowTransmitAction::espnow_start() {
     Serial.print("failed with status: 0X");
     Serial.println(peer_add_status - ESP_ERR_ESPNOW_BASE, HEX);
   }
+  Serial.print("Registering send callback ... ");
   bool callback_registration_status =
     esp_now_register_send_cb(send_callback) == ESP_OK;
-  Serial.print("Registering send callback ... ");
   Serial.println(callback_registration_status ? "succeeded." : "failed.");
 
   return true;

@@ -5,6 +5,8 @@
  *
  *  Created on: Dec 3, 2022
  *      Author: Eric Mintz
+ *
+ * ESP-Now communication configuration
  */
 
 #ifndef COMMUNICATIONSETTINGS_H_
@@ -12,8 +14,9 @@
 
 #include "Arduino.h"
 
-// Receiver MAC address: 78:21:84:7f:80:fc
-
+/**
+ * Receiver MAC address: 78:21:84:7f:80:fc
+ */
 static const uint8_t receiver_address[] = {0x78, 0x21, 0x84, 0x7f, 0x80, 0xfc};
 
 #endif /* COMMUNICATIONSETTINGS_H_ */
