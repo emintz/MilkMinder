@@ -73,7 +73,7 @@ const EventRelayAction::State EventRelayAction::TRANSITION_TABLE
  * the the gyroscope task indicates tilt for the specified time. Note
  * that the time is in milliseconds.
  */
-#define CONFIRMATION_TIME_MS 2500
+#define CONFIRMATION_TIME_MS 500
 
 /**
  * Wait time for message receipt when the receiver is connected
