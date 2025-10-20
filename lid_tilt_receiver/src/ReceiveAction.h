@@ -28,7 +28,7 @@ class ReceiveAction : public TaskAction {
     RCV_LID_POSITION_COUNT,
   };
 
-  Resettable * watchdog_timer;
+  Resettable * watchdog_timer_;
   PullQueueHT<LidPositionReport>& lid_position_report_queue_;
   uint16_t lid_open_count_;
 

@@ -10,12 +10,16 @@
 #include "PinAssignments.h"
 #include "WhiteLedPin.h"
 
-// Lid open confirmation time in milliseconds. When the lid is held open
-// for the confirmation time, delivery has definitely started.
+/**
+ * Lid open confirmation time in milliseconds. When the lid is held open
+ * for the confirmation time, delivery has definitely started.
+ */
 #define CONFIRM_OPEN_TIMEOUT_TICKS pdMS_TO_TICKS(500)
 
-// Lid closure confirmation time. When the lid has been closed for the
-// specified time, delivery has definitely ended.
+/**
+ * Lid closure confirmation time. When the lid has been closed for the
+ * specified time, delivery has definitely ended.
+*/
 #define CONFIRM_CLOSURE_TIMEOUT_TICKS pdMS_TO_TICKS(5000)
 
 static const AlarmMessage CONNECTED_ALARM = {
@@ -119,7 +123,7 @@ MilkArrivalAction::MilkArrivalAction(
     PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue_,
     PullQueueHT<DisplayMessage>& display_command_queue_,
     PullQueueHT<LidPositionReport>& lid_position_report_queue_) :
-      time_task(time_task_),
+      time_action_(time_task_),
       alarm_event_queue_(alarm_event_queue_),
       delivery_led_illumination_queue_(delivery_led_illumination_queue_),
       display_command_queue_(display_command_queue_),
@@ -196,7 +200,7 @@ void MilkArrivalAction::run() {
               LidPositionReport::LID_POS_CLOSE_TIMEOUT);
           break;
         case ArrivalState::MILK_ARRIVAL_CONFIRMED_DELIVERY_IS_COMPLETE:
-          time_task->start_stopwatch();
+          time_action_->start_stopwatch();
           delivery_led_illumination_queue_.send_message(&LED_ON, 0);
           alarm_event_queue_.send_message(&DELIVERED_ALARM, 0);
           display_message.command = LCD_DELIVERED;

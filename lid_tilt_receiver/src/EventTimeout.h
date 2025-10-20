@@ -3,6 +3,12 @@
  *
  *  Created on: Oct 13, 2025
  *      Author: Eric Mintz
+ *
+ * Timeout action that posts debounced lid movement events for processing.
+ * The milk arrival action starts the containing timer when the lid moves
+ * so as to eliminate transient signals. This allows the milk deliverer to
+ * open the lid repeatedly without triggering a multiple open (i.e. tamper)
+ * alert.
  */
 
 #ifndef EVENTTIMEOUT_H_
@@ -19,6 +25,14 @@ class EventTimeout : public VoidFunction {
   MutexH mutex_;
 
 public:
+  /**
+   * Constructor
+   *
+   * Parameters                      Contents
+   * ------------------------------- -------------------------------------
+   * lid_position_report_queue       Carries self-posted events when time
+   *                                 expires.
+   */
   EventTimeout(PullQueueHT<LidPositionReport>& lid_position_report_queue);
   virtual ~EventTimeout();
 

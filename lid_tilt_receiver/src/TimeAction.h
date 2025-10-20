@@ -4,7 +4,8 @@
  *  Created on: Feb 8, 2023
  *      Author: Eric Mintz
  *
- * Tracks the current time using a DS3231 time source.
+ * Tracks the current time using a DS3231 time source and sends the
+ * current for display on the LCD.
  */
 
 #ifndef TIMEACTION_H_
@@ -56,7 +57,8 @@ public:
    * interrupt_pin         GPIO that receives the 1 Hz square wave from the
    *                       real time clock.
    * time_zone             The time zone in which the milk arrives
-   * display_command_queue Time changes are posted here.
+   * display_command_queue Time changes are posted here for display on
+   *                       the LCD.
    */
   TimeAction(
       RTC_DS3231 *time_keeper,

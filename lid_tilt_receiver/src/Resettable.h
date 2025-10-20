@@ -3,6 +3,8 @@
  *
  *  Created on: May 21, 2023
  *      Author: Eric Mintz
+ *
+ * Interface implemented by classes that can be reset.
  */
 
 #ifndef RESETTABLE_H_

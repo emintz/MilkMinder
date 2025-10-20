@@ -35,6 +35,10 @@
  *
  * The task implements a Moore-type finite state machine that transitions among
  * the states specified below in response to ConnectionStatus events.
+ *
+ * The connection indicator is a different LED from the blinking network error
+ * indicator. The blinking network error indicator is controlled by a blink
+ * action.
  */
 class EspNowStatusAction : public TaskAction {
 
@@ -60,6 +64,20 @@ class EspNowStatusAction : public TaskAction {
   PullQueueHT<DisplayMessage>& display_command_queue_;
 
 public:
+  /**
+   * Constructor
+   *
+   * Parameters:
+   *
+   * Name                       Contents
+   * -------------------------- ------------------------------------------------
+   * disconnected_led_action    Blinks the network down indicator LED
+   * connected_led_pin          GPIO pin connected to the indicator LED
+   * communications_event_queue Input queue that provides network connectivity
+   *                            status
+   * display_command_queue      Output queue that carries command to the LCD
+   *                            manager
+   */
   EspNowStatusAction(
       BlinkAction& disconnected_led_action,
       uint8_t connected_led_pin,
@@ -67,8 +85,9 @@ public:
       PullQueueHT<DisplayMessage>& display_command_queue);
   virtual ~EspNowStatusAction();
 
-//  TaskHandle_t start(void);
-
+  /**
+   * Task logic.
+   */
   virtual void run(void) override;
 };
 

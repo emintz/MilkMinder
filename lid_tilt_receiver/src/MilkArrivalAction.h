@@ -20,20 +20,19 @@
 #ifndef MILKARRIVALTASK_H_
 #define MILKARRIVALTASK_H_
 
-#include <src/AlarmAction.h>
-#include <src/TimeAction.h>
-
 #include "Arduino.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "AlarmAction.h"
 #include "DeliveryLEDIlluminationStatus.h"
 #include "EventTimeout.h"
 #include "LidPositionReport.h"
 #include "OneShotTimerH.h"
 #include "PullQueueHT.h"
 #include "TaskAction.h"
+#include "TimeAction.h"
 
 class MilkArrivalAction : public TaskAction {
 
@@ -54,7 +53,7 @@ class MilkArrivalAction : public TaskAction {
       [MILK_ARRIVAL_NUMBER_OF_STATES]
       [LidPositionReport::LID_POS_NUMBER_OF_VALUES];
 
-  TimeAction *time_task;
+  TimeAction *time_action_;
   PullQueueHT<AlarmMessage>& alarm_event_queue_;
   PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue_;
   PullQueueHT<DisplayMessage>& display_command_queue_;
@@ -89,16 +88,32 @@ class MilkArrivalAction : public TaskAction {
       LidPositionReport::PositionValue notification_on_expiration);
 
 public:
+  /**
+   * Constructor
+   *
+   * Parameters:
+   * ----------
+   *
+   * Name                  Contents
+   * --------------------- ----------------------------------------------------
+   * time_action                     Tracks the current time and sends it
+   *                                 to the LCD task for display
+   * alarm_event_queue               Output queue for publishing alarms
+   * delivery_led_illumination_queue Output queue for milk delivery LED
+   *                                 illumination commands
+   * lid_position_report_queue       Output queue for lid position reports
+   */
   MilkArrivalAction(
-      TimeAction * time_task,
+      TimeAction * time_action,
       PullQueueHT<AlarmMessage>& alarm_event_queue,
       PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
       PullQueueHT<DisplayMessage>& display_command_queue,
       PullQueueHT<LidPositionReport>& lid_position_report_queue);
   virtual ~MilkArrivalAction();
 
-//  TaskHandle_t start(void);
-
+  /**
+   * Task logic
+   */
   virtual void run(void) override;
 };
 

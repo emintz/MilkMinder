@@ -5,6 +5,7 @@
  *      Author: Eric Mintz
  *
  * Illuminates the delivery indicate LED as directed by incoming commands.
+ * The LED can be off, blinking, or on.
  */
 
 #ifndef DELIVERYLEDACTION_H_
@@ -24,6 +25,18 @@ class DeliveryLedAction : public TaskAction {
   const uint16_t off_time_ms_;  // The time to hold the LED off when blinking.
 
 public:
+  /**
+   * Constructor
+   *
+   * Parameters                      Contents
+   * ------------------------------- -------------------------------------
+   * delivery_led_illumination_queue Input queue, provides commands
+   * led_pin                         The pin to illuminate
+   * on_time_ms                      The length of time to illuminate the
+   *                                 LED when blinking
+   * off_time_ms                     The length of time to keep the LED off
+   *                                 when blinking
+   */
   DeliveryLedAction(
       PullQueueHT<LedIlluminationMessage>& delivery_led_illumination_queue,
       uint8_t led_pin,
@@ -31,6 +44,9 @@ public:
       uint16_t off_time_ms);
   virtual ~DeliveryLedAction();
 
+  /**
+   * Task logic
+   */
   virtual void run() override;
 };
 

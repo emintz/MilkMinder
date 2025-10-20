@@ -15,6 +15,10 @@
 #include "DisplayMessage.h"
 #include "PinAssignments.h"
 
+/**
+ * Carries notifications from the ESP-Now receive callback to the running
+ * receive action.
+ */
 static PullQueueHT<CommunicationEvent> the_motion_notification_queue(3);
 
 static uint8_t builtin_pin_state = LOW;
@@ -22,7 +26,7 @@ static uint8_t builtin_pin_state = LOW;
 ReceiveAction::ReceiveAction(
     Resettable *watchdog_timer,
     PullQueueHT<LidPositionReport>& lid_position_report_queue) :
-      watchdog_timer(watchdog_timer),
+      watchdog_timer_(watchdog_timer),
       lid_position_report_queue_(lid_position_report_queue),
       lid_open_count_(0) {
 }
@@ -67,7 +71,7 @@ void ReceiveAction::run() {
   for(;;) {
     memset(&event, 0, sizeof(event));
     if (the_motion_notification_queue.pull_message(&event)) {
-      watchdog_timer->reset();
+      watchdog_timer_->reset();
       builtin_pin_state = (builtin_pin_state == LOW) ? HIGH : LOW;
       digitalWrite(BUILTIN_LED_PIN, builtin_pin_state);
 
